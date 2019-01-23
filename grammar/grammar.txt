@@ -1,0 +1,96 @@
+program: block
+
+block: line SEMICOLON
+     | line SEMICOLON block
+
+line: definition
+    | expression
+    | funcCall
+    | ifStatement
+    | whileStatement
+    | returnStatement
+    | objReference
+
+definition: varDefinition
+          | funcDefinition
+          | classDefinition
+
+varDefinition: LET optVarAssignment
+
+varList: VARIABLE
+       | VARIABLE COMMA varList
+
+optVarAssignment: varList GETS expression
+                | varList
+
+funcDefinition: LET VARIABLE OPENPARENTHESIS optVarList CLOSEPARENTHESIS OPENCURLY block CLOSECURLY
+
+optVarList: varList
+          | *empty*
+
+funcCall: VARIABLE OPENPARENTHESIS optExpressionList CLOSEPARENTHESIS
+
+classDefinition: CLASS VARIABLE OPENCURLY classProperties CLOSECURLY
+
+classProperties: VARIABLE SEMICOLON
+               | VARIABLE SEMICOLON classProperties
+
+objProperties: propertyDefinition
+             | propertyDefinition objProperties
+             | *empty*
+
+propertyDefinition: VARIABLE COLON unary SEMICOLON
+
+objReference: VARIABLE DOT VARIABLE
+
+parenExpressionList: OPENPARENTHESIS expression CLOSEPARENTHESIS
+
+
+ifStatement: IF parenExpressionList OPENCURLY block CLOSECURLY optElse
+
+optElse: ELSE OPENCURLY block CLOSECURLY
+       | ELSE ifStatement
+       | *empty*
+
+array: OPENBRACKET optExpressionList CLOSEBRACKET
+
+whileStatement: WHILE parenExpressionList OPENCURLY block CLOSECURLY
+
+returnStatement: RETURN optExpressionList SEMICOLON
+
+optExpressionList: expressionList
+                 | *empty*
+
+expressionList: expression
+              | expression COMMA expressionList
+
+expression: unary
+          | unary operator expression
+
+unary: INTEGER
+     | REAL
+     | VARIABLE
+     | BOOLEAN
+     | OPENQUOTE STRING CLOSEQUOTE
+     | funcCall
+     | NEG unary
+     | objReference
+     | array
+     | expression
+     | parenExpressionList
+     | OPENCURLY objProperties CLOSECURLY
+
+operator: PLUS
+        | PLUSPLUS
+        | MINUS
+        | MINUSMINUS
+        | TIMES
+        | DIVIDE
+        | MOD
+        | AND
+        | OR
+        | NOT
+        | LESSTHAN
+        | GREATERTHAN
+        | ISEQUALTO
+        | GETS

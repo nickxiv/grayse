@@ -1,0 +1,5 @@
+//Written by Nick Martin for CS403 - Programming Languages
+
+//The purpose of test3 is to test functionality of variables starting with underline;
+
+let _serviceCall = "API called!";

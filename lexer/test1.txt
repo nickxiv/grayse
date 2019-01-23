@@ -1,0 +1,89 @@
+//Written by Nick Martin for CS403 - Programming Languages
+
+//The purpose of test1 is to test on program.txt from the grammar assignment
+let a = 1;
+let b = 1 + 1;
+let c;
+let d, e;
+let f, g = 6 - 1;
+
+let cool = TRUE;
+
+let name = "Nick";
+
+let classes = [
+    "Programming Languages",
+    "Brain-Computer Interfaces",
+    "Database Management Systems",
+    "Operating Systems"
+];
+
+
+let doNothing() {
+    RETURN;
+};
+
+let square(num) {
+    doNothing();
+    RETURN (num * num);
+};
+
+let getNestedFunc(num) {
+    let nestedMaker(x) {
+        return (x % num);
+    };
+    return nestedMaker;
+};
+
+class Person {
+    age;
+    firstName;
+    lastName;
+    smart;
+    someFunc;
+    yearInSchool;
+    classes;
+    classKeys;
+};
+
+let person = {
+    age: 20;
+    firstName: name;
+    lastName: "Martin";
+    smart: TRUE;
+    someFunc: doNothing();
+    yearInSchool: (5 - 1);
+    classes: classes;
+    classKeys: [
+        403,
+        491,
+        300,
+        301
+    ];
+};
+
+let emptyObj = {};
+
+person.age = 21;
+
+c = square(b);
+
+if (cool & TRUE) {
+    f = 8;
+} else if ((!cool) | cool) {
+    f = 9;
+} else {
+    f = 10;
+};
+
+while (cool & (b < 10)) {
+    cool = !cool;
+    doNothing();
+    ++b;
+};
+
+if (9 == 10) {
+    print("Math broke!");
+}
+
+return 0;
