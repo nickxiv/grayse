@@ -6,3 +6,7 @@ let a = 1;
 let b = 1.2;
 let c = 1.2.3; //ERROR line 7: Bad number detected.
 let d = 1.4;
+
+
+/Users/Nick/GitRepositories/grayse/lexer/test5.gray
+lexer/test5.gray
