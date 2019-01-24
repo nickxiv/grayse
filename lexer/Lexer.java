@@ -8,6 +8,7 @@ public class Lexer implements Types {
     public String FileName;
     public PushbackReader Pbr;
     public int CurrentLine = 1;
+    public boolean isDecimal = false;
 
     public Lexeme lex() throws IOException {
         int i;
@@ -57,13 +58,24 @@ public class Lexer implements Types {
             case '!': return new Lexeme(NOT, CurrentLine);
             case '|': return new Lexeme(OR, CurrentLine);
             case '&': return new Lexeme(AND, CurrentLine);
-            case '.': return new Lexeme(DOT, CurrentLine);
+            case '.':
+                i = this.Pbr.read();
+                ch = (char)i;
+                if (Character.isDigit(ch)) {
+                    isDecimal = true;
+                    this.Pbr.unread(i);
+                    return lexNumber();
+                }
+                else {
+                    this.Pbr.unread(i);
+                    return new Lexeme(DOT, CurrentLine);
+                }
             case '[': return new Lexeme(OBRACKET, CurrentLine);
             case ']': return new Lexeme(CBRACKET, CurrentLine);
         default: 
             // multi-character tokens 
             if (Character.isDigit(ch)) { 
-                this.Pbr.unread(i); 
+                this.Pbr.unread(i);
                 return lexNumber();
             } 
             else if (Character.isLetter(ch) || ch == '_') { 
@@ -85,23 +97,25 @@ public class Lexer implements Types {
         i = this.Pbr.read();
         ch = (char)i;
 
+        if(isDecimal) token = token + "0.";
+
         while (Character.isDigit(ch)) {
             token = token + ch;
             i = this.Pbr.read();
             ch = (char)i;    
-        }        
+        }
 
         if (ch == '.') {
+            if(isDecimal) return new Lexeme(ERROR, BAD_NUMBER,CurrentLine);
             token = token + ch;
             i = this.Pbr.read();
-            ch = (char)i;    
-
+            ch = (char)i;
         }
         else {
             this.Pbr.unread(i);
-            return new Lexeme(INTEGER, Integer.parseInt(token), CurrentLine);
+            if(!isDecimal) return new Lexeme(INTEGER, Integer.parseInt(token), CurrentLine);
+            else return new Lexeme(REAL, Double.parseDouble(token), CurrentLine);
         }
-        //this while is only reached after reading a period, so we know it's a real number
         while (Character.isDigit(ch)) {
             token = token + ch;
             i = this.Pbr.read();

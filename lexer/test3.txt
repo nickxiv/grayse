@@ -3,3 +3,5 @@
 //The purpose of test3 is to test functionality of variables starting with underline;
 
 let _serviceCall = "API called!";
+
+let decimal = -.3;
