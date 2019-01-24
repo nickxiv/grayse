@@ -13,4 +13,4 @@ Test
 let string5 = "//Comment as string?";
 let string6 = "_!@#$%^&*()_+;[]\'/.,==";
 let string7 = "         tabs?               yes";
-let string8 = "\"";
+return;

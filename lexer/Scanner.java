@@ -5,14 +5,14 @@ import java.io.PushbackReader;
 
 import java.io.IOException;
 
-public class Scanner implements Types{
+public class Scanner implements Types {
 
     public static void main(String[] args) throws IOException {
         String fileName = args[0];
         Lexer lexer = new Lexer();
 
-        lexer.FileReader = new FileReader(fileName);
-        lexer.Pbr = new PushbackReader(lexer.FileReader);
+        FileReader fr = new FileReader(fileName);
+        lexer.Pbr = new PushbackReader(fr);
 
         Lexeme lexeme = lexer.lex();
 

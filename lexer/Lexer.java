@@ -1,13 +1,11 @@
 //Written by Nick Martin for CS403 - Programming Languages
 
-import java.io.FileReader;
 import java.io.PushbackReader;
 
 import java.io.IOException;
 
 public class Lexer implements Types {
     public String FileName;
-    public FileReader FileReader;
     public PushbackReader Pbr;
     public int CurrentLine = 1;
 
