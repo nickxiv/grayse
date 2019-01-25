@@ -7,9 +7,11 @@ JFLAGS = -Xlint
 
 JRUN = scanner
 
-default: scanner
+default: 	
+	$(JCC) $(JFLAGS) Scanner.java
 
-scanner: Scanner.java
+
+scanner:
 	$(JCC) $(JFLAGS) Scanner.java
 
 test1:
