@@ -5,7 +5,6 @@ block: line SEMICOLON
 
 line: definition
     | expression
-    | funcCall
     | ifStatement
     | whileStatement
     | returnStatement
@@ -41,8 +40,6 @@ objProperties: propertyDefinition
 
 propertyDefinition: VARIABLE COLON unary SEMICOLON
 
-objReference: VARIABLE DOT VARIABLE
-
 parenExpressionList: OPENPARENTHESIS expression CLOSEPARENTHESIS
 
 
@@ -76,7 +73,6 @@ unary: INTEGER
      | NEG unary
      | objReference
      | array
-     | expression
      | parenExpressionList
      | OPENCURLY objProperties CLOSECURLY
 
@@ -94,3 +90,4 @@ operator: PLUS
         | GREATERTHAN
         | ISEQUALTO
         | GETS
+        | DOT
