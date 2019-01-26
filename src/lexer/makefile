@@ -5,7 +5,7 @@ JCC = javac
 
 JFLAGS = -Xlint
 
-JRUN = scanner
+JRUN = java Scanner
 
 default: 	
 	$(JCC) $(JFLAGS) Scanner.java
