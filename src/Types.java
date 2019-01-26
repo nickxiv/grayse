@@ -43,5 +43,7 @@ interface Types {
     public static final String BAD_NUMBER   = "BAD_NUMBER";
     public static final String BAD_VARIABLE = "BAD_VARIABLE";
     public static final String BAD_STRING   = "BAD_STRING";
+    public static final String SYNTAX_ERROR   = "SYNTAX_ERROR";
+
 
 }
