@@ -23,10 +23,8 @@ public class Recognizer implements Types {
             handleError();
             return;
         }
-        System.out.print(CurrentLexeme.type);
 
-        if (CurrentLexeme.value != null) System.out.print(" " + CurrentLexeme.value);
-        System.out.println();
+        //do some recognizing here
 
         while(CurrentLexeme.type != ENDOFFILE) {
             CurrentLexeme = lexer.lex();
@@ -35,10 +33,7 @@ public class Recognizer implements Types {
                 handleError();
                 return;
             }
-
-            System.out.print(CurrentLexeme.type);
-            if (CurrentLexeme.value != null) System.out.print(" " + CurrentLexeme.value);
-            System.out.println();
+            //do some recognizing here
         }
     }
 
