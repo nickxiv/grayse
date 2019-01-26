@@ -39,7 +39,7 @@ public class Scanner implements Types {
         }
     }
 
-    public static void handleError(Lexeme erroredLexeme) {
+    static void handleError(Lexeme erroredLexeme) {
         System.out.print("\n\n\n");
         if (erroredLexeme.value == BAD_NUMBER)      System.out.println("ERROR line " + erroredLexeme.lineNumber + ": Bad number detected");
         else if (erroredLexeme.value == BAD_VARIABLE) System.out.println("ERROR line " + erroredLexeme.lineNumber + ": Bad variable name detected");

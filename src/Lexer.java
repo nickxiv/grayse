@@ -10,6 +10,8 @@ public class Lexer implements Types {
     public int CurrentLine = 1;
     public boolean isDecimal = false;
 
+
+    //lex skips white space, then returns the next relevant lexeme
     public Lexeme lex() throws IOException {
         int i;
 
@@ -89,7 +91,7 @@ public class Lexer implements Types {
         } 
     }
 
-    public Lexeme lexNumber() throws IOException {
+    Lexeme lexNumber() throws IOException {
         int i;
         char ch;
         String token = "";
@@ -135,7 +137,7 @@ public class Lexer implements Types {
     }
     
 
-    public Lexeme lexVariableOrKeyword() throws IOException {
+    Lexeme lexVariableOrKeyword() throws IOException {
         int i;
         char ch;
         String token = "";
@@ -175,7 +177,7 @@ public class Lexer implements Types {
         }
     }
 
-    public Lexeme lexString() throws IOException {
+    Lexeme lexString() throws IOException {
         int i;
         char ch;
         String token = "";
@@ -192,7 +194,7 @@ public class Lexer implements Types {
         return new Lexeme(STRING, token, CurrentLine);
     }
 
-    public void skipWhiteSpace() throws IOException {
+    void skipWhiteSpace() throws IOException {
         int i = this.Pbr.read();
         char ch = (char)i;
 
@@ -220,7 +222,7 @@ public class Lexer implements Types {
         else this.Pbr.unread(i);
     }
 
-    public void skipSingleLineComment () throws IOException {
+    void skipSingleLineComment () throws IOException {
         int i = this.Pbr.read();
         char ch = (char)i;
 
@@ -232,7 +234,7 @@ public class Lexer implements Types {
 
     }
 
-    public void skipMultiLineComment() throws IOException {
+    void skipMultiLineComment() throws IOException {
         int i = this.Pbr.read();
         char ch = (char)i;
 
