@@ -53,7 +53,7 @@ array: OPENBRACKET optExpressionList CLOSEBRACKET
 
 whileStatement: WHILE parenExpressionList OPENCURLY block CLOSECURLY
 
-returnStatement: RETURN optExpressionList SEMICOLON
+returnStatement: RETURN optExpressionList
 
 optExpressionList: expressionList
                  | *empty*

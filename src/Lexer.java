@@ -74,6 +74,7 @@ public class Lexer implements Types {
                 }
             case '[': return new Lexeme(OBRACKET, CurrentLine);
             case ']': return new Lexeme(CBRACKET, CurrentLine);
+
         default: 
             // multi-character tokens 
             if (Character.isDigit(ch)) { 
@@ -158,6 +159,9 @@ public class Lexer implements Types {
         switch (token.toLowerCase()) {
             case "let":
                 return new Lexeme(LET, CurrentLine);
+            case "func":
+                return new Lexeme(FUNC, CurrentLine);
+
             case "return":
                 return new Lexeme(RETURN, CurrentLine);
             case "class":

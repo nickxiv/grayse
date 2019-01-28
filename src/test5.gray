@@ -1,8 +1,6 @@
 //Written by Nick Martin for CS403 - Programming Languages
 
-//The purpose of test5 is to detect a bad number error and print the error type and line number
+//The purpose of test5 is to detect a parsing error and print the error type and line number
 
 let a = 1;
-let b = 1.2;
-let c = 1.2.3; //ERROR line 7: Bad number detected.
-let d = 1.4;
+let b = "hello;
