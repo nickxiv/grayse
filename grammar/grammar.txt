@@ -8,7 +8,6 @@ line: definition
     | ifStatement
     | whileStatement
     | returnStatement
-    | objReference
 
 definition: varDefinition
           | funcDefinition
@@ -22,7 +21,7 @@ varList: VARIABLE
 optVarAssignment: varList GETS expression
                 | varList
 
-funcDefinition: LET VARIABLE OPENPARENTHESIS optVarList CLOSEPARENTHESIS OPENCURLY block CLOSECURLY
+funcDefinition: FUNC VARIABLE OPENPARENTHESIS optVarList CLOSEPARENTHESIS OPENCURLY block CLOSECURLY
 
 optVarList: varList
           | *empty*
@@ -67,11 +66,11 @@ expression: unary
 unary: INTEGER
      | REAL
      | VARIABLE
-     | BOOLEAN
-     | OPENQUOTE STRING CLOSEQUOTE
+     | TRUE
+     | FALSE
+     | STRING
      | funcCall
-     | NEG unary
-     | objReference
+     | MINUS unary
      | array
      | parenExpressionList
      | OPENCURLY objProperties CLOSECURLY
@@ -81,7 +80,7 @@ operator: PLUS
         | MINUS
         | MINUSMINUS
         | TIMES
-        | DIVIDE
+        | DIVIDES
         | MOD
         | AND
         | OR
