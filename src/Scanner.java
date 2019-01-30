@@ -37,6 +37,7 @@ public class Scanner implements Types {
             if (lexeme.value != null) System.out.print(" " + lexeme.value);
             System.out.println();
         }
+        System.exit(0);
     }
 
     static void handleError(Lexeme erroredLexeme) {
