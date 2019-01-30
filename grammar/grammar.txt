@@ -26,7 +26,7 @@ funcDefinition: FUNC VARIABLE OPENPARENTHESIS optVarList CLOSEPARENTHESIS OPENCU
 optVarList: varList
           | *empty*
 
-funcCall: VARIABLE OPENPARENTHESIS optExpressionList CLOSEPARENTHESIS
+funcCall: OPENPARENTHESIS optExpressionList CLOSEPARENTHESIS
 
 classDefinition: CLASS VARIABLE OPENCURLY classProperties CLOSECURLY
 
@@ -39,10 +39,7 @@ objProperties: propertyDefinition
 
 propertyDefinition: VARIABLE COLON unary SEMICOLON
 
-parenExpressionList: OPENPARENTHESIS expression CLOSEPARENTHESIS
-
-
-ifStatement: IF parenExpressionList OPENCURLY block CLOSECURLY optElse
+ifStatement: IF OPENPARENTHESIS expression CLOSEPARENTHESIS OPENCURLY block CLOSECURLY optElse
 
 optElse: ELSE OPENCURLY block CLOSECURLY
        | ELSE ifStatement
@@ -50,7 +47,7 @@ optElse: ELSE OPENCURLY block CLOSECURLY
 
 array: OPENBRACKET optExpressionList CLOSEBRACKET
 
-whileStatement: WHILE parenExpressionList OPENCURLY block CLOSECURLY
+whileStatement: WHILE OPENPARENTHESIS expression CLOSEPARENTHESIS OPENCURLY block CLOSECURLY
 
 returnStatement: RETURN optExpressionList
 
@@ -65,26 +62,26 @@ expression: unary
 
 unary: INTEGER
      | REAL
-     | VARIABLE
+     | uVariable
      | TRUE
      | FALSE
      | STRING
-     | funcCall
      | MINUS unary
      | array
-     | parenExpressionList
+     | NOT
+     | OPENPARENTHESIS expression CLOSEPARENTHESIS
      | OPENCURLY objProperties CLOSECURLY
 
+uVariable: VARIABLE
+         | VARIABLE funcCall
+
 operator: PLUS
-        | PLUSPLUS
         | MINUS
-        | MINUSMINUS
         | TIMES
         | DIVIDES
         | MOD
         | AND
         | OR
-        | NOT
         | LESSTHAN
         | GREATERTHAN
         | ISEQUALTO

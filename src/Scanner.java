@@ -44,9 +44,7 @@ public class Scanner implements Types {
         if (erroredLexeme.value == BAD_NUMBER)      System.out.println("ERROR line " + erroredLexeme.lineNumber + ": Bad number detected");
         else if (erroredLexeme.value == BAD_VARIABLE) System.out.println("ERROR line " + erroredLexeme.lineNumber + ": Bad variable name detected");
         else if (erroredLexeme.value == BAD_STRING) System.out.println("ERROR line " + erroredLexeme.lineNumber + ": Bad string detected");
-
-
         else System.out.println("ERROR line " + erroredLexeme.lineNumber + ": Unknown error detected");
+        System.exit(1);
     }
-    
 }

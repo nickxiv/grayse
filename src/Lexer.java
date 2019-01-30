@@ -24,23 +24,9 @@ public class Lexer implements Types {
             case '(': return new Lexeme(OPAREN, CurrentLine);
             case ')': return new Lexeme(CPAREN, CurrentLine); 
             case ',': return new Lexeme(COMMA, CurrentLine); 
-            case '+': 
-                i = this.Pbr.read();
-                ch = (char)i;
-                if (ch == '+') return new Lexeme(PLUSPLUS, CurrentLine);
-                else {
-                    this.Pbr.unread(i);
-                    return new Lexeme(PLUS, CurrentLine);
-                }
+            case '+': return new Lexeme(PLUS, CurrentLine);
             case '*': return new Lexeme(TIMES, CurrentLine); 
-            case '-': 
-                i = this.Pbr.read();
-                ch = (char)i;
-                if (ch == '-') return new Lexeme(MINUSMINUS, CurrentLine);
-                else {
-                    this.Pbr.unread(i);
-                    return new Lexeme(MINUS, CurrentLine);
-                }
+            case '-': return new Lexeme(MINUS, CurrentLine);
             case '/': return new Lexeme(DIVIDES, CurrentLine); 
             case '%': return new Lexeme(MOD, CurrentLine);
             case '<': return new Lexeme(LESSTHAN, CurrentLine); 

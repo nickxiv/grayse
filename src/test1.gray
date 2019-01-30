@@ -79,11 +79,11 @@ if (cool & TRUE) {
 while (cool & (b < 10)) {
     cool = !cool;
     doNothing();
-    ++b;
+    b = b + 1;
 };
 
 if (9 == 10) {
     print("Math broke!");
-}
+};
 
 return 0;

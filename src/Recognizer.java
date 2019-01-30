@@ -26,12 +26,12 @@ public class Recognizer implements Types {
         program();
         match(ENDOFFILE);
         System.out.println("legal");
-
+        System.exit(0);
     }
 
     public static void handleError() {
         System.out.print("\n\n\n");
-        if (CurrentLexeme.value == BAD_NUMBER)      System.out.println("ERROR line " + CurrentLexeme.lineNumber + ": Bad number detected");
+        if (CurrentLexeme.value == BAD_NUMBER) System.out.println("ERROR line " + CurrentLexeme.lineNumber + ": Bad number detected");
         else if (CurrentLexeme.value == BAD_VARIABLE) System.out.println("ERROR line " + CurrentLexeme.lineNumber + ": Bad variable name detected");
         else if (CurrentLexeme.value == BAD_STRING) System.out.println("ERROR line " + CurrentLexeme.lineNumber + ": Bad string detected");
         else if (CurrentLexeme.value == SYNTAX_ERROR) System.out.println("ERROR line " + CurrentLexeme.lineNumber + ": Syntax error");
@@ -46,8 +46,8 @@ public class Recognizer implements Types {
         matchNoAdvance(type);
         if (CurrentLexeme.type != ERROR) advance();
         else {
-            System.out.println("illegal line: " + CurrentLexeme.lineNumber);
-            System.exit(-1);
+             System.out.println(", expected: " + type);
+            System.exit(1);
         } 
     }
 
@@ -57,8 +57,8 @@ public class Recognizer implements Types {
 
     static void matchNoAdvance(String type) {
         if(!check(type)) {
-            int errorLine = CurrentLexeme.lineNumber;
-            CurrentLexeme = new Lexeme(ERROR, SYNTAX_ERROR, errorLine);
+            System.out.print("illegal line: " + CurrentLexeme.lineNumber);
+            CurrentLexeme = new Lexeme(ERROR, SYNTAX_ERROR, CurrentLexeme.lineNumber);
         }
     }
     
@@ -159,14 +159,13 @@ public class Recognizer implements Types {
     }
 
     static void funcCall() throws IOException {
-        match(VARIABLE);
         match(OPAREN);
         optExpressionList();
         match(CPAREN);
     }
 
     static boolean funcCallPending() throws IOException {
-        return check(VARIABLE);
+        return check(OPAREN);
     }
 
     static void classDefinition() throws IOException {
@@ -209,19 +208,11 @@ public class Recognizer implements Types {
         return check(VARIABLE);
     }
 
-    static void parenExpressionList() throws IOException {
+    static void ifStatement() throws IOException {
+        match(IF);
         match(OPAREN);
         expression();
         match(CPAREN);
-    }
-
-    static boolean parenExpressionListPending() throws IOException {
-        return check(OPAREN);
-    }
-
-    static void ifStatement() throws IOException {
-        match(IF);
-        parenExpressionList();
         match(OCURLY);
         block();
         match(CCURLY);
@@ -240,7 +231,9 @@ public class Recognizer implements Types {
                 block();
                 match(CCURLY);
             }
-            ifStatement();
+            else {
+                ifStatement();
+            }
         }
     }
 
@@ -256,7 +249,9 @@ public class Recognizer implements Types {
 
     static void whileStatement() throws IOException {
         match(WHILE);
-        parenExpressionList();
+        match(OPAREN);
+        expression();
+        match(CPAREN);
         match(OCURLY);
         block();
         match(CCURLY);
@@ -306,50 +301,63 @@ public class Recognizer implements Types {
     static void unary() throws IOException{
         if (check(INTEGER)) match(INTEGER);
         else if (check(REAL)) match(REAL);
-        else if (check(VARIABLE))  match(VARIABLE);
+        else if (uVariablePending())  uVariable();
         else if (check(TRUE)) match(TRUE);
         else if (check(FALSE)) match(FALSE);
         else if (check(STRING)) match(STRING);
-        else if (funcCallPending()) funcCall();
         else if (check(MINUS)) {
             match(MINUS);
             unary();
         }
         else if (arrayPending()) array();
-        else if (parenExpressionListPending()) parenExpressionList();
+        else if (check(OPAREN)) {
+            match(OPAREN);
+            expression();
+            match(CPAREN);
+        }
         else if (check(OCURLY)) {
             match(OCURLY);
             objProperties();
             match(CCURLY);
         } 
+        else if (check(NOT)) {
+            match(NOT);
+            expression();
+        }
+    }
+
+    static void uVariable() throws IOException {
+        match(VARIABLE);
+        if(funcCallPending()) funcCall();
+    }
+
+    static boolean uVariablePending() throws IOException {
+        return check(VARIABLE);
     }
 
     static boolean unaryPending() throws IOException {
         return
         check(INTEGER) ||
         check(REAL) ||
-        check(VARIABLE) ||
+        uVariablePending() ||
         check(TRUE) ||
         check(FALSE) ||
         check(STRING) ||
         funcCallPending() ||
         check(MINUS) ||
         arrayPending() ||
-        parenExpressionListPending() ||
+        check(OPAREN) ||
         check(OCURLY);
     }
 
     static void operator() throws IOException {
         if (check(PLUS)) match(PLUS);
-        else if (check(PLUSPLUS)) match(PLUSPLUS);
         else if (check(MINUS)) match(MINUS);
-        else if (check(MINUSMINUS)) match(MINUSMINUS);
         else if (check(TIMES)) match(TIMES);
         else if (check(DIVIDES)) match(DIVIDES);
         else if (check(MOD)) match(MOD);
         else if (check(AND)) match(AND);
         else if (check(OR)) match(OR);
-        else if (check(NOT)) match(NOT);
         else if (check(LESSTHAN)) match(LESSTHAN);
         else if (check(GREATERTHAN)) match(GREATERTHAN);
         else if (check(ISEQUALTO)) match(ISEQUALTO);
@@ -360,9 +368,7 @@ public class Recognizer implements Types {
     static boolean operatorPending() throws IOException {
         return
         check(PLUS) ||
-        check(PLUSPLUS) ||
         check(MINUS) ||
-        check(MINUSMINUS) ||
         check(TIMES) ||
         check(DIVIDES) ||
         check(MOD) ||
@@ -375,6 +381,4 @@ public class Recognizer implements Types {
         check(GETS) ||
         check(DOT);
     }
-
-
 }
