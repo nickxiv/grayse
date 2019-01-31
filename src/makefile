@@ -34,6 +34,8 @@ test5:
 	$(JCC) $(JFLAGS) *.java
 	$(JRUN) test5.gray
 
+test: run
+
 run:
 	$(JCC) $(JFLAGS) *.java
 	$(JRUN) test1.gray
