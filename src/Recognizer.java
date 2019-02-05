@@ -42,11 +42,11 @@ public class Recognizer implements Types {
         return CurrentLexeme.type == type;
     }
 
-    static void match(String type) throws IOException {
+    static void match(String type) throws IOException { //returns lexeme for parser
         matchNoAdvance(type);
         if (CurrentLexeme.type != ERROR) advance();
         else {
-             System.out.println(", expected: " + type);
+            System.out.println(", expected: " + type);
             System.exit(1);
         } 
     }
