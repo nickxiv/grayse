@@ -19,17 +19,17 @@ let classes = [
 ];
 
 
-let doNothing() {
+func doNothing() {
     RETURN;
 };
 
-let square(num) {
+func square(num) {
     doNothing();
     RETURN (num * num);
 };
 
-let getNestedFunc(num) {
-    let nestedMaker(x) {
+func getNestedFunc(num) {
+    func nestedMaker(x) {
         return (x % num);
     };
     return nestedMaker;
@@ -79,11 +79,11 @@ if (cool & TRUE) {
 while (cool & (b < 10)) {
     cool = !cool;
     doNothing();
-    ++b;
+    b = b + 1;
 };
 
 if (9 == 10) {
     print("Math broke!");
-}
+};
 
 return 0;

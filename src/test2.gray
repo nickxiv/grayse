@@ -3,7 +3,7 @@
 
 let a = 1; //lllllllla
 let b = 2;
-let c = 3; 
+let c = 3;
 /*
 *
 * things get interesting
@@ -11,7 +11,7 @@ let c = 3;
 */    
 
 
-    let d = 4;    
+    let 3 = 4;    
 let f = 10; //cool
 // neat
 

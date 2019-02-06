@@ -16,6 +16,4 @@ public class Lexeme {
         this.value = value;
         this.lineNumber = lineNumber;
     }
-
-
 }

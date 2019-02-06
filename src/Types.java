@@ -5,10 +5,8 @@ interface Types {
     public static final String OPAREN       = "OPAREN";
     public static final String CPAREN       = "CPAREN";
     public static final String COMMA        = "COMMA";
-    public static final String PLUSPLUS     = "PLUSPLUS";
     public static final String PLUS         = "PLUS";
     public static final String TIMES        = "TIMES";
-    public static final String MINUSMINUS   = "MINUSMINUS";
     public static final String MINUS        = "MINUS";
     public static final String DIVIDES      = "DIVIDES";
     public static final String MOD          = "MOD";
@@ -43,5 +41,7 @@ interface Types {
     public static final String BAD_NUMBER   = "BAD_NUMBER";
     public static final String BAD_VARIABLE = "BAD_VARIABLE";
     public static final String BAD_STRING   = "BAD_STRING";
+    public static final String SYNTAX_ERROR = "SYNTAX_ERROR";
+    public static final String FUNC         = "FUNC";
 
 }

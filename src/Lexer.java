@@ -10,6 +10,8 @@ public class Lexer implements Types {
     public int CurrentLine = 1;
     public boolean isDecimal = false;
 
+
+    //lex skips white space, then returns the next relevant lexeme
     public Lexeme lex() throws IOException {
         int i;
 
@@ -22,23 +24,9 @@ public class Lexer implements Types {
             case '(': return new Lexeme(OPAREN, CurrentLine);
             case ')': return new Lexeme(CPAREN, CurrentLine); 
             case ',': return new Lexeme(COMMA, CurrentLine); 
-            case '+': 
-                i = this.Pbr.read();
-                ch = (char)i;
-                if (ch == '+') return new Lexeme(PLUSPLUS, CurrentLine);
-                else {
-                    this.Pbr.unread(i);
-                    return new Lexeme(PLUS, CurrentLine);
-                }
+            case '+': return new Lexeme(PLUS, CurrentLine);
             case '*': return new Lexeme(TIMES, CurrentLine); 
-            case '-': 
-                i = this.Pbr.read();
-                ch = (char)i;
-                if (ch == '-') return new Lexeme(MINUSMINUS, CurrentLine);
-                else {
-                    this.Pbr.unread(i);
-                    return new Lexeme(MINUS, CurrentLine);
-                }
+            case '-': return new Lexeme(MINUS, CurrentLine);
             case '/': return new Lexeme(DIVIDES, CurrentLine); 
             case '%': return new Lexeme(MOD, CurrentLine);
             case '<': return new Lexeme(LESSTHAN, CurrentLine); 
@@ -72,6 +60,7 @@ public class Lexer implements Types {
                 }
             case '[': return new Lexeme(OBRACKET, CurrentLine);
             case ']': return new Lexeme(CBRACKET, CurrentLine);
+
         default: 
             // multi-character tokens 
             if (Character.isDigit(ch)) { 
@@ -89,7 +78,7 @@ public class Lexer implements Types {
         } 
     }
 
-    public Lexeme lexNumber() throws IOException {
+    Lexeme lexNumber() throws IOException {
         int i;
         char ch;
         String token = "";
@@ -135,7 +124,7 @@ public class Lexer implements Types {
     }
     
 
-    public Lexeme lexVariableOrKeyword() throws IOException {
+    Lexeme lexVariableOrKeyword() throws IOException {
         int i;
         char ch;
         String token = "";
@@ -156,6 +145,9 @@ public class Lexer implements Types {
         switch (token.toLowerCase()) {
             case "let":
                 return new Lexeme(LET, CurrentLine);
+            case "func":
+                return new Lexeme(FUNC, CurrentLine);
+
             case "return":
                 return new Lexeme(RETURN, CurrentLine);
             case "class":
@@ -175,7 +167,7 @@ public class Lexer implements Types {
         }
     }
 
-    public Lexeme lexString() throws IOException {
+    Lexeme lexString() throws IOException {
         int i;
         char ch;
         String token = "";
@@ -192,7 +184,7 @@ public class Lexer implements Types {
         return new Lexeme(STRING, token, CurrentLine);
     }
 
-    public void skipWhiteSpace() throws IOException {
+    void skipWhiteSpace() throws IOException {
         int i = this.Pbr.read();
         char ch = (char)i;
 
@@ -220,7 +212,7 @@ public class Lexer implements Types {
         else this.Pbr.unread(i);
     }
 
-    public void skipSingleLineComment () throws IOException {
+    void skipSingleLineComment () throws IOException {
         int i = this.Pbr.read();
         char ch = (char)i;
 
@@ -232,7 +224,7 @@ public class Lexer implements Types {
 
     }
 
-    public void skipMultiLineComment() throws IOException {
+    void skipMultiLineComment() throws IOException {
         int i = this.Pbr.read();
         char ch = (char)i;
 

@@ -5,7 +5,7 @@
 let string1 = "";
 let string2 = "Hi!";
 let string3 = "123";
-let string4 = "
+let string4 = 
 New
 Line
 Test
