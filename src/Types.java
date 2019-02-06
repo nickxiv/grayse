@@ -43,5 +43,7 @@ interface Types {
     public static final String BAD_STRING   = "BAD_STRING";
     public static final String SYNTAX_ERROR = "SYNTAX_ERROR";
     public static final String FUNC         = "FUNC";
+    public static final String ENV          = "ENV";
+    public static final String VALUES       = "VALUES";
 
 }
