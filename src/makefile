@@ -38,11 +38,11 @@ test: run
 
 run:
 	$(JCC) $(JFLAGS) *.java
-	$(JRUN) test1.gray
-	$(JRUN) test2.gray
-	$(JRUN) test3.gray
-	$(JRUN) test4.gray
-	$(JRUN) test5.gray
+	-$(JRUN) test1.gray
+	-$(JRUN) test2.gray
+	-$(JRUN) test3.gray
+	-$(JRUN) test4.gray
+	-$(JRUN) test5.gray
 
 clean: 
 	$(RM) *.class
