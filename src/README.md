@@ -27,13 +27,13 @@ test1.gray:
 legal
 
 test2.gray:
-legal
+illegal line: 14, expected: VARIABLE
 
 test3.gray:
 legal
 
 test4.gray:
-legal
+illegal line: 10, expected: SEMICOLON
 
 test5.gray (exits with error code of 1):
 illegal line: 6, expected: SEMICOLON
