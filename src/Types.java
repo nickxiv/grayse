@@ -45,5 +45,7 @@ interface Types {
     public static final String FUNC         = "FUNC";
     public static final String ENV          = "ENV";
     public static final String VALUES       = "VALUES";
+    public static final String TABLE        = "TABLE";
+    public static final String JOIN         = "JOIN";
 
 }

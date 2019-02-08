@@ -34,11 +34,11 @@ public class Lexeme {
         return this.cdr;
     }
 
-    public void setCar(Lexeme parentLexeme, Lexeme childLexeme) {
-        parentLexeme.car = childLexeme;
+    public void setCar(Lexeme childLexeme) {
+        this.car = childLexeme;
     }
 
-    public void setCdr(Lexeme parentLexeme, Lexeme childLexeme) {
-        parentLexeme.cdr = childLexeme;
+    public void setCdr(Lexeme childLexeme) {
+        this.cdr = childLexeme;
     }
 }
