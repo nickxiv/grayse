@@ -5,44 +5,35 @@ JCC = javac
 
 JFLAGS = -Xlint
 
-JRUN = java Recognizer
+JRUN = java Environments
 
 default: 	
 	$(JCC) $(JFLAGS) *.java
 
 
 scanner:
-	$(JCC) $(JFLAGS) *.java
+	$(JCC) $(JFLAGS) Scanner.java
 
 test1:
-	$(JCC) $(JFLAGS) *.java
 	$(JRUN) test1.gray
 
 test2:
-	$(JCC) $(JFLAGS) *.java
 	$(JRUN) test2.gray
 
 test3:
-	$(JCC) $(JFLAGS) *.java
 	$(JRUN) test3.gray
 
 test4:
-	$(JCC) $(JFLAGS) *.java
 	$(JRUN) test4.gray
 
 test5:
-	$(JCC) $(JFLAGS) *.java
 	$(JRUN) test5.gray
 
 test: run
 
 run:
-	$(JCC) $(JFLAGS) *.java
-	-$(JRUN) test1.gray
-	-$(JRUN) test2.gray
-	-$(JRUN) test3.gray
-	-$(JRUN) test4.gray
-	-$(JRUN) test5.gray
+	-$(JRUN)
 
 clean: 
+	clear
 	$(RM) *.class
