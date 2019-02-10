@@ -65,6 +65,10 @@ public class Environments implements Types {
     }
 
     static Lexeme insert(Lexeme variable, Lexeme value, Lexeme env) {
+        if(lookup(variable.value.toString(), env) != null) {
+            System.out.println("ERROR: redefinition of variable \'" + variable.value.toString() +"\' in local environment");
+            System.exit(1);
+        }
         Lexeme table = env.car();
         table.setCar(cons(JOIN, variable, table.car()));
         table.setCdr(cons(JOIN, value, table.cdr()));
@@ -83,7 +87,6 @@ public class Environments implements Types {
             }
             env = env.cdr();
         }
-        System.out.println("ERROR: Variable \'" + variable + "\' is not defined");
         return null;
     }
 
