@@ -1,8 +1,7 @@
 # Lexer is a module within the Grayse programming language, written by Nick Martin for CS 403 Programming Languages
+
 # The first class within the module is "Scanner"
 # Usage is "scanner FFFF" where FFFF is the name of a file written in Grayse
-
-
 
 # Step by step scanner usage:
  1. Compile Scanner.java using provided makefile or typing javac Scanner.java
@@ -17,11 +16,21 @@
  2. Type recognizer FFFF where FFFF is your Grayse file name
  3. Done!
 
+# The third class within the module is "Environments"
+# Usage is "environments"
+# This class tests functionality of building environments using a hard-coded testing
+
+# Step by step environments usage:
+ 1. Compile Environments.java using provided makefile or typing javac Environments.java
+ 2. Type environments
+ 3. Done!
+
+
 # With the provided makefile, typing "make" will compile all java classes.
-# "make run" will compile all classes and run the recognizer on them
+# "make run" will run the environments test
 # "make clean" will delete all .class files
 
-# Expected output of included test files:
+# Expected output of included test files when run with Recognizer:
 
 test1.gray:
 legal
