@@ -1,16 +1,5 @@
 //Written by Nick Martin for CS403 - Programming Languages
 
-//The purpose of test4 is to check limits of string assignment
+//The purpose of test4 is to be the first parsing test
 
-let string1 = "";
-let string2 = "Hi!";
-let string3 = "123";
-let string4 = 
-New
-Line
-Test
-";
-let string5 = "//Comment as string?";
-let string6 = "_!@#$%^&*()_+;[]\'/.,==";
-let string7 = "         tabs?               yes";
-return;
+let a = 1 + 1;

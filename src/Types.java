@@ -46,6 +46,11 @@ interface Types {
     public static final String ENV          = "ENV";
     public static final String VALUES       = "VALUES";
     public static final String TABLE        = "TABLE";
-    public static final String JOIN         = "JOIN";
-
+    public static final String GLUE         = "GLUE";
+    public static final String BLOCK        = "BLOCK";
+    public static final String LINE         = "LINE";
+    public static final String OPTVARASSIGN = "OPTVARASSIGN";
+    public static final String VARLIST      = "VARLIST";
+    public static final String UVARIABLE    = "UVARIABLE";
+    public static final String FUNCDEF      = "FUNCDEF";
 }
