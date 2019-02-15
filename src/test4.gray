@@ -2,7 +2,27 @@
 
 //The purpose of test4 is to be the first parsing test
 
-let a = 1 + 1;
-let b = 2;
+let a = 1;
+let b = 1 + 1;
 let c;
-b = 3;
+let d, e;
+let f, g = 6 - 1;
+
+let cool = TRUE;
+
+let name = "Nick";
+
+let classes = [
+    "CS300",
+    "CS301",
+    "CS403",
+    "CS491"
+];
+
+if (b = 3) {
+    b = 4;
+};
+
+while (b < 10) {
+    b = b + 1;
+};

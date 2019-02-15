@@ -159,9 +159,9 @@ public class Lexer implements Types {
             case "while":
                 return new Lexeme(WHILE, CurrentLine);
             case "true":
-                return new Lexeme(TRUE, CurrentLine);
+                return new Lexeme(TRUE, true, CurrentLine);
             case "false":
-                return new Lexeme(FALSE, CurrentLine);
+                return new Lexeme(FALSE, false, CurrentLine);
             default:
                 return new Lexeme(VARIABLE, token, CurrentLine);
         }

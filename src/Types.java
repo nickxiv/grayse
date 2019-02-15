@@ -53,4 +53,6 @@ interface Types {
     public static final String VARLIST      = "VARLIST";
     public static final String UVARIABLE    = "UVARIABLE";
     public static final String FUNCDEF      = "FUNCDEF";
+    public static final String ARRAY        = "ARRAY";
+    public static final String EXPRLIST     = "EXPRLIST";
 }

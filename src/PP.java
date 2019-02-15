@@ -22,9 +22,7 @@ public class PP implements Types {
         Tree = program();
         prettyPrint(Tree);
 
-
         match(ENDOFFILE);
-
     }
 
     static void prettyPrint(Lexeme tree) {
@@ -40,6 +38,10 @@ public class PP implements Types {
             case VARLIST:
                 printVarList(tree);
                 break;
+
+            case ARRAY:
+                printArray(tree);
+                break; 
 
             case INTEGER:
                 System.out.print(tree.value);
@@ -58,23 +60,31 @@ public class PP implements Types {
                 break;
 
             case PLUS:
-                System.out.print('+');
+                System.out.print(" + ");
                 break;
 
             case MINUS:
-                System.out.print('-');
+                System.out.print(" - ");
                 break;
 
             case GETS:
                 System.out.print(" = ");
                 break;
 
+            case LESSTHAN:
+                System.out.print(" < ");
+                break;
+
+            case GREATERTHAN:
+                System.out.print(" > ");
+                break;
+
             case TRUE:
-                System.out.print("#t");
+                System.out.print("true");
                 break;
 
             case FALSE:
-                System.out.print("#f");
+                System.out.print("false");
                 break;
 
 
@@ -142,8 +152,8 @@ public class PP implements Types {
         Lexeme curr, next;
         if (definitionPending()) curr = definition();
         else if (expressionPending()) curr = expression();
-        // else if (ifStatementPending()) curr = ifStatement();
-        // else if (whileStatementPending()) curr = whileStatement();
+        else if (ifStatementPending()) curr = ifStatement();
+        else if (whileStatementPending()) curr = whileStatement();
         // else if (returnStatementPending()) curr = returnStatement();
         else {
             System.out.println("ERROR IN LINE FUNCTION");
@@ -158,9 +168,9 @@ public class PP implements Types {
 
     static boolean linePending() throws IOException {
         return definitionPending() ||
-        expressionPending(); //||
-        // ifStatementPending() ||
-        // whileStatementPending() ||
+        expressionPending() ||
+        ifStatementPending() ||
+        whileStatementPending();
         // returnStatementPending();
     }
 
@@ -207,10 +217,9 @@ public class PP implements Types {
         if (check(GETS)) {
             match(GETS);
             expr = expression();
-            return cons(OPTVARASSIGN, null, cons(GETS, vars, expr));
         }
         else expr = null;
-        return cons(OPTVARASSIGN, null, vars);
+        return cons(OPTVARASSIGN, null, cons(GETS, vars, expr));
     }
 
     static Lexeme optVarList() throws IOException {
@@ -231,6 +240,56 @@ public class PP implements Types {
         body = block();
         match(CCURLY);
         return cons(FUNCDEF, name, cons(GLUE, paramList, body));
+    }
+
+    static Lexeme ifStatement() throws IOException {
+        match(IF);
+        match(OPAREN);
+        Lexeme cond = expression();
+        match(CPAREN);
+        match(OCURLY);
+        Lexeme body = block();
+        match(CCURLY);
+        Lexeme optElse = optElse();
+
+        return cons(IF, cond, cons(GLUE, body, optElse));
+    }
+
+    static boolean ifStatementPending() throws IOException {
+        return check(IF);
+    }
+
+    static Lexeme whileStatement() throws IOException {
+        Lexeme cond, body;
+        match(WHILE);
+        match(OPAREN);
+        cond = expression();
+        match(CPAREN);
+        match(OCURLY);
+        body = block();
+        match(CCURLY);
+        return cons(WHILE, cond, body);
+
+    }
+
+    static boolean whileStatementPending() throws IOException {
+        return check(WHILE);
+    }
+
+    static Lexeme optElse() throws IOException {
+        if (check(ELSE)) {
+            match(ELSE);
+            if (check(OCURLY)) {
+                Lexeme block = block();
+                match(OCURLY);
+                match(CCURLY);
+                return cons(ELSE, block, null);
+            }
+            else {
+                return ifStatement();
+            }
+        }
+        else return null;
     }
 
     // static void expr3() {
@@ -285,7 +344,7 @@ public class PP implements Types {
             Lexeme u = unary();
             return cons(MINUS, u, null);
         }
-        // else if (arrayPending()) return array();
+        else if (arrayPending()) return array();
         else if (check(OPAREN)) {
             match(OPAREN);
             return expression();
@@ -315,10 +374,44 @@ public class PP implements Types {
         check(STRING) ||
         // funcCallPending() ||
         check(MINUS) ||
-        // arrayPending() ||
+        arrayPending() ||
         check(OPAREN) ||
         check(OCURLY);
     }
+
+    static Lexeme array() throws IOException {
+        Lexeme elements;
+        match(OBRACKET);
+        elements = optExpressionList();
+        match(CBRACKET);
+        return cons(ARRAY, elements, null);
+    }
+
+    static boolean arrayPending() throws IOException {
+        return check(OBRACKET);
+    }
+
+    static Lexeme optExpressionList() throws IOException {
+        if (expressionListPending()) return expressionList();
+        return null;
+    }
+
+    static Lexeme expressionList() throws IOException {
+        Lexeme expr = expression();
+        Lexeme el;
+        if (check(COMMA)) {
+            match(COMMA);
+            el = expressionList();
+        }
+        else el = null;
+        return cons(EXPRLIST, expr, el);
+
+    }
+
+    static boolean expressionListPending() throws IOException {
+        return expressionPending();
+    }
+
 
     static Lexeme uVariable() throws IOException {
         Lexeme var, funcCall;
@@ -391,17 +484,25 @@ public class PP implements Types {
         tree = tree.car();
         switch (tree.type) {
             case OPTVARASSIGN:
-                tree = tree.cdr();
-                System.out.print("let ");
-                prettyPrint(tree.car());
-                if (tree.cdr() != null) prettyPrint(tree);
-                if (tree.cdr() != null) prettyPrint(tree.cdr());
+                printOVA(tree);
                 break;
 
             case GETS:
                 printExpression(tree);
                 break;
-        
+
+            case PLUS:
+                printExpression(tree);
+                break;
+
+            case IF:
+                printIfStatement(tree);
+                break;
+
+            case WHILE:
+                printWhileStatement(tree);
+                break;
+
             default:
                 System.out.println("DEFAULT IN PRINTLINE FOR TYPE " + tree.type);
                 break;
@@ -424,5 +525,47 @@ public class PP implements Types {
             tree = tree.cdr();
         }
         prettyPrint(tree);
+    }
+
+    static void printOVA(Lexeme tree) {
+        tree = tree.cdr();
+        System.out.print("let ");
+        prettyPrint(tree.car());
+        if (tree.cdr() == null) return;
+        prettyPrint(tree);              //GETS
+        tree = tree.cdr();
+        while (tree.value == null) {
+            if(tree.type != ARRAY) prettyPrint(tree.car());
+            prettyPrint(tree);
+            tree = tree.cdr();
+        }
+        prettyPrint(tree);
+    }
+
+    static void printIfStatement(Lexeme tree) {
+        System.out.print("if (");
+        printExpression(tree.car());
+        System.out.println(") {");
+        prettyPrint(tree.cdr().car());          //cdr = GLUE, cdr.car = block
+        System.out.print("}");
+    }
+
+    static void printWhileStatement(Lexeme tree) {
+        System.out.print("while (");
+        printExpression(tree.car());
+        System.out.println(") {");
+        prettyPrint(tree.cdr());
+        System.out.print("}");
+    }
+
+    static void printArray(Lexeme tree) {
+        System.out.println("\n[");
+        tree = tree.car();
+        while (tree != null && tree.type == EXPRLIST) {
+            prettyPrint(tree.car());
+            if(tree.cdr() != null) System.out.print(", \n");
+            tree = tree.cdr();
+        }
+        System.out.println("\n]");
     }
 }
