@@ -48,7 +48,7 @@ public class PP implements Types {
                 break;
 
             case STRING:
-                System.out.print(tree.value);
+                System.out.print("\"" + tree.value + "\"");
                 break;
 
             case VARIABLE:
@@ -534,12 +534,12 @@ public class PP implements Types {
         if (tree.cdr() == null) return;
         prettyPrint(tree);              //GETS
         tree = tree.cdr();
-        while (tree.value == null) {
+        while (tree != null && tree.value == null) {
             if(tree.type != ARRAY) prettyPrint(tree.car());
             prettyPrint(tree);
             tree = tree.cdr();
         }
-        prettyPrint(tree);
+        if (tree != null) prettyPrint(tree);
     }
 
     static void printIfStatement(Lexeme tree) {
@@ -566,6 +566,6 @@ public class PP implements Types {
             if(tree.cdr() != null) System.out.print(", \n");
             tree = tree.cdr();
         }
-        System.out.println("\n]");
+        System.out.print("\n]");
     }
 }
