@@ -37,3 +37,4 @@ run:
 clean: 
 	clear
 	$(RM) *.class
+	$(RM) *.pp.*

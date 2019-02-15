@@ -10,7 +10,6 @@ public class PP implements Types {
 
     public static void main(String[] args) throws IOException {
         String fileName = args[0];
-        System.out.println("Pretty printing " + fileName);
         lexer = new Lexer();
         FileReader fr = new FileReader(fileName);
         lexer.Pbr = new PushbackReader(fr);
@@ -21,7 +20,6 @@ public class PP implements Types {
             return;
         }
         Tree = program();
-        System.out.println(Tree.type);
         prettyPrint(Tree);
 
 
@@ -32,12 +30,10 @@ public class PP implements Types {
     static void prettyPrint(Lexeme tree) {
         switch (tree.type) {
             case BLOCK:
-                System.out.println("BLOCK PRETTYPRINT");
                 printBlock(tree);
                 break;
 
             case LINE:
-                System.out.println("LINE PP");
                 printLine(tree);
                 break;
 
@@ -56,6 +52,31 @@ public class PP implements Types {
             case VARIABLE:
                 System.out.print(tree.value);
                 break;
+
+            case UVARIABLE:
+                printUVariable(tree);
+                break;
+
+            case PLUS:
+                System.out.print('+');
+                break;
+
+            case MINUS:
+                System.out.print('-');
+                break;
+
+            case GETS:
+                System.out.print(" = ");
+                break;
+
+            case TRUE:
+                System.out.print("#t");
+                break;
+
+            case FALSE:
+                System.out.print("#f");
+                break;
+
 
             case ENDOFFILE:
                 System.out.println("REACHED ENDOFFILE");
@@ -186,9 +207,10 @@ public class PP implements Types {
         if (check(GETS)) {
             match(GETS);
             expr = expression();
+            return cons(OPTVARASSIGN, null, cons(GETS, vars, expr));
         }
         else expr = null;
-        return cons(OPTVARASSIGN, null, cons(GETS, vars, expr));
+        return cons(OPTVARASSIGN, null, vars);
     }
 
     static Lexeme optVarList() throws IOException {
@@ -241,8 +263,8 @@ public class PP implements Types {
         u = unary();
         while (operatorPending()) {
             op = operator();
-            e = unary();
-            u = cons(op.type, u, e);
+            e = expression();
+            return cons(op.type, u, e);
         }
         return u;
     }
@@ -360,34 +382,47 @@ public class PP implements Types {
         }
     }
 
+    static void printUVariable(Lexeme tree) {
+        prettyPrint(tree.car());
+        if(tree.cdr() != null) prettyPrint(tree.cdr());
+    }
+
     static void printLine(Lexeme tree) {
         tree = tree.car();
         switch (tree.type) {
             case OPTVARASSIGN:
                 tree = tree.cdr();
                 System.out.print("let ");
-                printVarList(tree.car());
-                System.out.print(" = ");
-                printExpression(tree.cdr());
+                prettyPrint(tree.car());
+                if (tree.cdr() != null) prettyPrint(tree);
+                if (tree.cdr() != null) prettyPrint(tree.cdr());
+                break;
+
+            case GETS:
+                printExpression(tree);
                 break;
         
             default:
-                System.out.println("DEFAULT IN PRINTLINE");
+                System.out.println("DEFAULT IN PRINTLINE FOR TYPE " + tree.type);
                 break;
         }
         System.out.println(";");
     }
 
     static void printVarList(Lexeme tree) {
-        tree = tree.car();
         while (tree != null) {
-            prettyPrint(tree.car());  //variable
+            prettyPrint(tree.car());
             tree = tree.cdr();
             if (tree != null) System.out.print(", ");
         }
     }
 
     static void printExpression(Lexeme tree) {
-        System.out.println("ExPRESSION");
+        while (tree.value == null) {
+            prettyPrint(tree.car());
+            prettyPrint(tree);
+            tree = tree.cdr();
+        }
+        prettyPrint(tree);
     }
 }

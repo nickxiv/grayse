@@ -3,3 +3,6 @@
 //The purpose of test4 is to be the first parsing test
 
 let a = 1 + 1;
+let b = 2;
+let c;
+b = 3;
