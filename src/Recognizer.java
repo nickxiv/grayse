@@ -11,10 +11,7 @@ public class Recognizer implements Types {
     static Lexer lexer;
 
     public static void main(String[] args) throws IOException {
-        recognize(args[0]);
-    }
-
-    public static void recognize(String fileName) throws IOException {
+        String fileName = args[0];
         lexer = new Lexer();
 
         FileReader fr = new FileReader(fileName);
@@ -30,7 +27,6 @@ public class Recognizer implements Types {
         match(ENDOFFILE);
         System.out.println("legal");
         System.exit(0);
-
     }
 
     public static void handleError() {

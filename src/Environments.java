@@ -70,8 +70,8 @@ public class Environments implements Types {
             System.exit(1);
         }
         Lexeme table = env.car();
-        table.setCar(cons(GLUE, variable, table.car()));
-        table.setCdr(cons(GLUE, value, table.cdr()));
+        table.setCar(cons(JOIN, variable, table.car()));
+        table.setCdr(cons(JOIN, value, table.cdr()));
         return value;
     }
 
