@@ -2,6 +2,18 @@
 
 //The purpose of test3 is to test functionality of variables starting with underline;
 
-let _serviceCall = "API called!";
+func doNothing() {
+    return;
+};
 
-let decimal = -.3;
+func square(num) {
+    doNothing();
+    RETURN (num * num);
+};
+
+func add(a, b) {
+    RETURN (a + b);
+};
+
+i = square(2);
+j = add(square(2), square(3));

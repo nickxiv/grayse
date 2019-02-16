@@ -36,3 +36,10 @@ func square(num) {
     doNothing();
     RETURN (num * num);
 };
+
+func add(a, b) {
+    RETURN (a + b);
+};
+
+i = square(2);
+j = add(square(2), square(3));

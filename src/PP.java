@@ -99,10 +99,13 @@ public class PP implements Types {
                 System.out.print("false");
                 break;
 
+            case FUNCCALL:
+                printFuncCall(tree);
+                break;
 
             case ENDOFFILE:
                 System.out.println("REACHED ENDOFFILE");
-                System.exit(0);
+                System.exit(1);
                 break;
 
             default:
@@ -265,7 +268,7 @@ public class PP implements Types {
         match(OPAREN);
         Lexeme params = optExpressionList();
         match(CPAREN);
-        return null;
+        return cons(FUNCCALL, params, null);
     }
 
     static boolean funcCallPending() {
@@ -580,17 +583,18 @@ public class PP implements Types {
     static void printExprList(Lexeme tree) {
         while (tree != null) {
             prettyPrint(tree.car());
+            if(tree.cdr != null) System.out.print(", ");
             tree = tree.cdr();
         }
     }
 
     static void printExpression(Lexeme tree) {
-        while (tree != null && tree.value == null) {
-            prettyPrint(tree.car());
+        while (tree != null && tree.value == null && tree.type != FUNCCALL) {
+            if (tree.cdr() == null || tree.cdr().type != FUNCCALL) prettyPrint(tree.car());
             if (tree.cdr() != null) prettyPrint(tree);
             tree = tree.cdr();
         }
-        if (tree != null)prettyPrint(tree);
+        if (tree != null && tree.type != FUNCCALL) prettyPrint(tree);
     }
 
     static void printOVA(Lexeme tree) {
@@ -657,4 +661,9 @@ public class PP implements Types {
         if (tree.car() != null) prettyPrint(tree.car());
     }
 
+    static void printFuncCall(Lexeme tree) {
+        System.out.print("(");
+        if (tree.car() != null) prettyPrint(tree.car());
+        System.out.print(")");
+    }
 }
