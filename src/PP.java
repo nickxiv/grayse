@@ -39,6 +39,10 @@ public class PP implements Types {
                 printVarList(tree);
                 break;
 
+            case EXPRLIST:
+                printExprList(tree);
+                break;
+
             case ARRAY:
                 printArray(tree);
                 break; 
@@ -59,12 +63,20 @@ public class PP implements Types {
                 printUVariable(tree);
                 break;
 
+            case PARENEXPR:
+                printParenExpression(tree);
+                break;
+
             case PLUS:
                 System.out.print(" + ");
                 break;
 
             case MINUS:
                 System.out.print(" - ");
+                break;
+
+            case TIMES:
+                System.out.print(" * ");
                 break;
 
             case GETS:
@@ -154,7 +166,7 @@ public class PP implements Types {
         else if (expressionPending()) curr = expression();
         else if (ifStatementPending()) curr = ifStatement();
         else if (whileStatementPending()) curr = whileStatement();
-        // else if (returnStatementPending()) curr = returnStatement();
+        else if (returnStatementPending()) curr = returnStatement();
         else {
             System.out.println("ERROR IN LINE FUNCTION");
             System.exit(1);
@@ -170,13 +182,13 @@ public class PP implements Types {
         return definitionPending() ||
         expressionPending() ||
         ifStatementPending() ||
-        whileStatementPending();
-        // returnStatementPending();
+        whileStatementPending() ||
+        returnStatementPending();
     }
 
     static Lexeme definition() throws IOException {
         if (varDefinitionPending()) return varDefinition();
-        // if (funcDefinitionPending()) return funcDefinition();
+        if (funcDefinitionPending()) return funcDefinition();
         // if (classDefinitionPending()) return classDefinition();
         else {
             System.out.println("ERROR IN DEFINITION FUNCTION");
@@ -186,8 +198,8 @@ public class PP implements Types {
     }
 
     static boolean definitionPending() {
-        return varDefinitionPending();// ||
-        // funcDefinitionPending() ||
+        return varDefinitionPending() ||
+        funcDefinitionPending();
         // classDefinitionPending();
     }
 
@@ -211,6 +223,10 @@ public class PP implements Types {
         return cons(VARLIST, v, l);
     }
 
+    static boolean varListPending() throws IOException {
+        return check(VARIABLE);
+    }
+
     static Lexeme optVarAssignment() throws IOException {
         Lexeme vars, expr;
         vars = varList();
@@ -223,9 +239,8 @@ public class PP implements Types {
     }
 
     static Lexeme optVarList() throws IOException {
-        // if (varListPending()) return varList();
-        // else return null;
-        return null;
+        if (varListPending()) return varList();
+        else return null;
     }
 
 
@@ -240,6 +255,31 @@ public class PP implements Types {
         body = block();
         match(CCURLY);
         return cons(FUNCDEF, name, cons(GLUE, paramList, body));
+    }
+
+    static boolean funcDefinitionPending() {
+        return check(FUNC);
+    }
+
+    static Lexeme funcCall() throws IOException {
+        match(OPAREN);
+        Lexeme params = optExpressionList();
+        match(CPAREN);
+        return null;
+    }
+
+    static boolean funcCallPending() {
+        return check(OPAREN);
+    }
+
+    static Lexeme returnStatement() throws IOException {
+        match(RETURN);
+        Lexeme returns = optExpressionList();
+        return cons(RETURN, returns, null);
+    }
+
+    static boolean returnStatementPending() {
+        return check(RETURN);
     }
 
     static Lexeme ifStatement() throws IOException {
@@ -347,7 +387,9 @@ public class PP implements Types {
         else if (arrayPending()) return array();
         else if (check(OPAREN)) {
             match(OPAREN);
-            return expression();
+            Lexeme expr = expression();
+            match(CPAREN);
+            return cons(PARENEXPR, expr, null);
         }
         // else if (check(OCURLY)) {
         //     match(OCURLY);
@@ -372,7 +414,7 @@ public class PP implements Types {
         check(TRUE) ||
         check(FALSE) ||
         check(STRING) ||
-        // funcCallPending() ||
+        funcCallPending() ||
         check(MINUS) ||
         arrayPending() ||
         check(OPAREN) ||
@@ -416,8 +458,8 @@ public class PP implements Types {
     static Lexeme uVariable() throws IOException {
         Lexeme var, funcCall;
         var = match(VARIABLE);
-        // if(funcCallPending())  funcCall = funcCall();
-        funcCall = null; //add back the else here;
+        if(funcCallPending())  funcCall = funcCall();
+        else funcCall = null;
         return cons(UVARIABLE, var, funcCall);
     }
 
@@ -487,11 +529,28 @@ public class PP implements Types {
                 printOVA(tree);
                 break;
 
+            case FUNCDEF:
+                printFuncDefinition(tree);
+                break;
+
+            case UVARIABLE:
+                printUVariable(tree);
+                break;
+
+            case RETURN:
+                printReturnStatement(tree);
+                break;
+
             case GETS:
                 printExpression(tree);
                 break;
 
+
             case PLUS:
+                printExpression(tree);
+                break;
+
+            case TIMES:
                 printExpression(tree);
                 break;
 
@@ -518,13 +577,20 @@ public class PP implements Types {
         }
     }
 
-    static void printExpression(Lexeme tree) {
-        while (tree.value == null) {
+    static void printExprList(Lexeme tree) {
+        while (tree != null) {
             prettyPrint(tree.car());
-            prettyPrint(tree);
             tree = tree.cdr();
         }
-        prettyPrint(tree);
+    }
+
+    static void printExpression(Lexeme tree) {
+        while (tree != null && tree.value == null) {
+            prettyPrint(tree.car());
+            if (tree.cdr() != null) prettyPrint(tree);
+            tree = tree.cdr();
+        }
+        if (tree != null)prettyPrint(tree);
     }
 
     static void printOVA(Lexeme tree) {
@@ -534,12 +600,13 @@ public class PP implements Types {
         if (tree.cdr() == null) return;
         prettyPrint(tree);              //GETS
         tree = tree.cdr();
-        while (tree != null && tree.value == null) {
-            if(tree.type != ARRAY) prettyPrint(tree.car());
-            prettyPrint(tree);
-            tree = tree.cdr();
-        }
-        if (tree != null) prettyPrint(tree);
+        // while (tree != null && tree.value == null) {
+        //     if(tree.type != ARRAY) prettyPrint(tree.car());
+        //     prettyPrint(tree);
+        //     tree = tree.cdr();
+        // }
+        // if (tree != null) prettyPrint(tree);
+        printExpression(tree);
     }
 
     static void printIfStatement(Lexeme tree) {
@@ -568,4 +635,26 @@ public class PP implements Types {
         }
         System.out.print("\n]");
     }
+
+    static void printParenExpression(Lexeme tree) {
+        System.out.print("(");
+        printExpression(tree.car());
+        System.out.print(")");
+    }
+
+    static void printFuncDefinition(Lexeme tree) {
+        System.out.print("func ");
+        prettyPrint(tree.car());
+        System.out.print("(");
+        if (tree.cdr().car() != null) prettyPrint(tree.cdr().car());
+        System.out.println(") {");
+        prettyPrint(tree.cdr().cdr());
+        System.out.print("}");
+    }
+
+    static void printReturnStatement(Lexeme tree) {
+        System.out.print("return ");
+        if (tree.car() != null) prettyPrint(tree.car());
+    }
+
 }

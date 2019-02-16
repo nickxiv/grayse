@@ -7,6 +7,7 @@ let b = 1 + 1;
 let c;
 let d, e;
 let f, g = 6 - 1;
+let h = a + b;
 
 let cool = TRUE;
 
@@ -25,4 +26,13 @@ if (b = 3) {
 
 while (b < 10) {
     b = b + 1;
+};
+
+func doNothing() {
+    return;
+};
+
+func square(num) {
+    doNothing();
+    RETURN (num * num);
 };

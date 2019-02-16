@@ -5,7 +5,7 @@ JCC = javac
 
 JFLAGS = -Xlint
 
-JRUN = java Environments
+JRUN = java PP
 
 default: 	
 	$(JCC) $(JFLAGS) *.java

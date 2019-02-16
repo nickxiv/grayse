@@ -55,4 +55,5 @@ interface Types {
     public static final String FUNCDEF      = "FUNCDEF";
     public static final String ARRAY        = "ARRAY";
     public static final String EXPRLIST     = "EXPRLIST";
+    public static final String PARENEXPR    = "PARENEXPR";
 }
