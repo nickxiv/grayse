@@ -46,6 +46,21 @@ interface Types {
     public static final String ENV          = "ENV";
     public static final String VALUES       = "VALUES";
     public static final String TABLE        = "TABLE";
-    public static final String JOIN         = "JOIN";
-
+    public static final String GLUE         = "GLUE";
+    public static final String BLOCK        = "BLOCK";
+    public static final String LINE         = "LINE";
+    public static final String OPTVARASSIGN = "OPTVARASSIGN";
+    public static final String VARLIST      = "VARLIST";
+    public static final String UVARIABLE    = "UVARIABLE";
+    public static final String FUNCDEF      = "FUNCDEF";
+    public static final String ARRAY        = "ARRAY";
+    public static final String EXPRLIST     = "EXPRLIST";
+    public static final String FUNCCALL     = "FUNCCALL";
+    public static final String CLASSDEF     = "CLASSDEF";
+    public static final String PARENEXPR    = "PARENEXPR";
+    public static final String CLASSPROP    = "CLASSPROP";
+    public static final String PROPDEF      = "PROPDEF";
+    public static final String ALLOBJPROPS  = "ALLOBJPROPS";
+    public static final String OBJPROP      = "OBJPROP";
+    public static final String UMINUS       = "UMINUS";
 }

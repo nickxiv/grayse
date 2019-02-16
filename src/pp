@@ -1,0 +1,4 @@
+# Implemented by Nick Martin for CS 403 - Programming Languages
+#!/bin/bash
+
+java PP $1
