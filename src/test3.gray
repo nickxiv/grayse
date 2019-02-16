@@ -1,6 +1,6 @@
 //Written by Nick Martin for CS403 - Programming Languages
 
-//The purpose of test3 is to test functionality of variables starting with underline;
+//The purpose of test3 is to test functionality of function defs
 
 func doNothing() {
     return;
@@ -12,7 +12,13 @@ func square(num) {
 };
 
 func add(a, b) {
-    RETURN (a + b);
+    func subtract(x, y) {
+        func multiply(z, w) {
+            return (z * w);
+        };
+        return multiply((x - y), (y - x));
+    };
+    return subtract((a + a), (b + b));
 };
 
 i = square(2);

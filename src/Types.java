@@ -56,5 +56,11 @@ interface Types {
     public static final String ARRAY        = "ARRAY";
     public static final String EXPRLIST     = "EXPRLIST";
     public static final String FUNCCALL     = "FUNCCALL";
+    public static final String CLASSDEF     = "CLASSDEF";
     public static final String PARENEXPR    = "PARENEXPR";
+    public static final String CLASSPROP    = "CLASSPROP";
+    public static final String PROPDEF      = "PROPDEF";
+    public static final String ALLOBJPROPS  = "ALLOBJPROPS";
+    public static final String OBJPROP      = "OBJPROP";
+    public static final String UMINUS       = "UMINUS";
 }
