@@ -31,23 +31,26 @@ public class Evaluation implements Types {
         switch (tree.type)
             {
             //self evaluating
-            case INTEGER: return tree;
-            case REAL: return tree;
+            case INTEGER:
+            case REAL:
             case STRING: return tree;
 
             //find value of variables in the environment
             case VARIABLE: return Environments.lookup(tree.value.toString(),env);
 
             //parenthesized expression
-            case OPAREN: return eval(tree.cdr(),env);
+            case PARENEXPR: return eval(tree.car(),env);
 
             //operators (both sides evaluated)
             case PLUS:
             case MINUS:
             case TIMES:
             case DIVIDES:
+            case ISEQUALTO:
             //...
+            case LESSTHAN:
             case GREATERTHAN: return evalSimpleOp(tree,env);
+
             //AND and OR short-circuit
             case AND:
             // case OR: return evalShortCircuitOp(tree,env);
@@ -55,19 +58,27 @@ public class Evaluation implements Types {
             // case DOT: return evalDot(tree,env);
             // //assign operator evals rhs for sure
             // //    lhs is a variable or a dot operation
+
             case GETS: return evalAssign(tree,env);
+
             // //variable and function definitions
             // case OPTVARASSIGN: return evalVarDef(tree,env);
             // case FUNCDEF: return evalFuncDef(tree,env);
             // //imperative constructs
-            // case IF: return evalIf(tree,env);
-            // case WHILE: return evalWhile(tree,env);
+            case IF: return evalIf(tree,env);
+            case WHILE: return evalWhile(tree,env);
             // //function calls
             // case FUNCCALL: return evalFuncCall(tree,env);
+
             // //program and function body are parsed as blocks
             case BLOCK: return evalBlock(tree,env);
             case LINE: return evalLine(tree, env);
             case OPTVARASSIGN: return evalOVA(tree, env);
+
+            //others
+            case UVARIABLE: return evalUVariable(tree, env);
+            case TRUE: return new Lexeme(INTEGER, 1, tree.lineNumber);
+            case FALSE: return new Lexeme(INTEGER, 0, tree.lineNumber);
             default: 
                 System.out.println("IN EVAL, TYPE ISN'T IMPLEMENETED YET: " + tree.type);
                 System.exit(1);
@@ -106,7 +117,7 @@ public class Evaluation implements Types {
         while(variables != null) {
             String varName = variables.car().value.toString();
             if ((Environments.lookup(varName, env) != null)) {
-                Environments.update(varName, value, env);
+                Environments.update(varName, value.value, env);
             }
             else {
                 Environments.insert(variables.car(), value, env);
@@ -117,10 +128,30 @@ public class Evaluation implements Types {
         
     }
 
+    static Lexeme evalIf(Lexeme t, Lexeme env) {
+        Lexeme cond = eval(t.car(), env);
+        if (cond.type == FALSE) return null;
+        Lexeme block = eval(t.cdr().car(), env);
+        return block;
+    }
+
+    static Lexeme evalWhile(Lexeme t, Lexeme env) {
+        Lexeme cond = eval(t.car(), env);
+        if (cond.type == FALSE) return null;
+        Lexeme block = null;
+        while (cond.type == TRUE) {
+            block = eval(t.cdr().car(), env);
+            cond = eval(t.car(), env);
+        }
+        return block;
+    }
+
     static Lexeme evalSimpleOp(Lexeme t, Lexeme env) {
         if (t.type == PLUS) return evalPlus(t,env);
         if (t.type == MINUS) return evalMinus(t,env);
         if (t.type == TIMES) return evalTimes(t, env);
+        if (t.type == ISEQUALTO) return evalIsEqualTo(t, env);
+        if (t.type == LESSTHAN) return evalLessThan(t, env);
         else {
             System.out.println("IN EVALSIMPLEOP, TYPE ISN'T IMPLEMENTED YET: " + t.type);
             System.exit(1);
@@ -162,6 +193,55 @@ public class Evaluation implements Types {
         else if (left.type == REAL && right.type == INTEGER)
             return new Lexeme(REAL, (double)left.value * (int)right.value, t.lineNumber);
         else return new Lexeme(REAL, (double)left.value * (double)left.value, t.lineNumber);
+    }
+
+    static Lexeme evalIsEqualTo(Lexeme t, Lexeme env) {
+        Lexeme left = eval(t.car(), env);
+        Lexeme right = eval(t.cdr(), env);
+        if (left.type == INTEGER && right.type == INTEGER) {
+            if ((int)left.value == (int)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            else return new Lexeme(FALSE, null, t.lineNumber);
+        }
+        else if (left.type == INTEGER && right.type == REAL) {
+            if ((double)left.value == (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            else return new Lexeme(FALSE, null, t.lineNumber);
+        }
+        else if (left.type == REAL && right.type == INTEGER) {
+            if ((double)left.value == (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            else return new Lexeme(FALSE, null, t.lineNumber);
+        }
+        else {
+            if ((double)left.value == (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            else return new Lexeme(FALSE, null, t.lineNumber);
+        }
+    }
+
+    static Lexeme evalLessThan(Lexeme t, Lexeme env) {
+        Lexeme left = eval(t.car(), env);
+        Lexeme right = eval(t.cdr(), env);
+        if (left.type == INTEGER && right.type == INTEGER) {
+            if ((int)left.value < (int)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            else return new Lexeme(FALSE, null, t.lineNumber);
+        }
+        else if (left.type == INTEGER && right.type == REAL) {
+            if ((double)left.value < (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            else return new Lexeme(FALSE, null, t.lineNumber);
+        }
+        else if (left.type == REAL && right.type == INTEGER) {
+            if ((double)left.value < (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            else return new Lexeme(FALSE, null, t.lineNumber);
+        }
+        else {
+            if ((double)left.value < (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            else return new Lexeme(FALSE, null, t.lineNumber);
+        }
+    }
+
+
+    static Lexeme evalUVariable(Lexeme t, Lexeme env) {
+        Lexeme value = eval(t.car(), env);
+        if (t.cdr() != null) eval(t.cdr(), env);
+        return value;
     }
 
 
