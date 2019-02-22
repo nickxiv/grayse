@@ -45,11 +45,12 @@ i = square(2);
 j = add(square(2), square(3));
 
 
+
 func getNestedFunc(num) {
     func nestedMaker(x) {
         return (x % num);
     };
-    return nestedMaker;
+    return nestedMaker(num);
 };
 
 class Person {

@@ -1,0 +1,24 @@
+let a = 1;
+let b = 2;
+let shortCircuit1 = 0;
+let shortCircuit2 = 0;
+let shortCircuit3 = 0;
+let shortCircuit4 = 0;
+
+
+
+if (true | false) {
+    shortCircuit1 = true;
+};
+
+if (false | true) {
+    shortCircuit2 = false;
+};
+
+if (true & false) {
+    shortCircuit3 = false;
+};
+
+if (false & true) {
+    shortCircuit4 = true;
+};

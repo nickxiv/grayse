@@ -8,6 +8,7 @@ let c;
 let d, e;
 let f, g = 6 - 1;
 let h = a + b;
+f = a;
 
 let cool = TRUE;
 let name = "Nick";
@@ -33,4 +34,35 @@ func doNothing() {
     return;
 };
 
+func square(num) {
+    doNothing();
+    RETURN (num * num);
+};
+
+func add(a, b) {
+    RETURN (a + b);
+};
+
+doNothing();
+let i = square(2);
+
+func getNestedFunc(num) {
+
+    func modder(x) {
+        return (x % num);
+    };
+    return modder(3);
+};
+
+
+func fact(num) {
+    if (num == 1) {
+        return num;
+    } else {
+        return num * fact(num - 1);
+    };
+};
+
+
+let factorial3 = fact(3);
 
