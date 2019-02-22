@@ -1,0 +1,11 @@
+func modSeventeenBy(num) {
+
+    func modder(x) {
+        return (x % num);
+    };
+    return modder(17);
+};
+
+
+let seventeenModTwo = modSeventeenBy(2);
+
