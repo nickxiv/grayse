@@ -23,13 +23,13 @@ scanner:
 # test3:
 # 	$(JRUN) test3.gray
 
-# test4:
-# 	$(JRUN) test4.gray
+test4:
+	$(JRUN) test4.gray
 
-# test5:
-# 	$(JRUN) test5.gray
+test5:
+	$(JRUN) test5.gray
 
-# test: run
+test: run
 
 run: test1 test2 test3
 

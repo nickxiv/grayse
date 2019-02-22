@@ -3,4 +3,5 @@
 //The purpose of test5 is to detect a parsing error and print the error type and line number
 
 let a = 1;
-let b = "hello;
+let b, c = 2;
+let d;
