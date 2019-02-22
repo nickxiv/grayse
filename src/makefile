@@ -27,34 +27,34 @@ test5:
 	@$(JRUN) tests/test5.gray
 
 error1:
-	@cat /tests/error1.gray
+	@cat tests/error1.gray
 
 error1x:
-	@$(JRUN) tests/error1.gray
+	-@$(JRUN) tests/error1.gray
 
 error2:
-	@cat /tests/error2.gray
+	@cat tests/error2.gray
 
 error2x:
-	@$(JRUN) tests/error2.gray
+	-@$(JRUN) tests/error2.gray
 
 error3:
-	@cat /tests/error3.gray
+	@cat tests/error3.gray
 
 error3x:
-	@$(JRUN) tests/error3.gray
+	-@$(JRUN) tests/error3.gray
 
 error4:
-	@cat /tests/error4.gray
+	@cat tests/error4.gray
 
 error4x:
-	@$(JRUN) tests/error4.gray
+	-@$(JRUN) tests/error4.gray
 
 error5:
-	@cat /tests/error5.gray
+	@cat tests/error5.gray
 
 error5x:
-	@$(JRUN) tests/error5.gray
+	-@$(JRUN) tests/error5.gray
 
 conditionals:
 	@cat tests/conditionals.gray

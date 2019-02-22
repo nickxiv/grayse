@@ -1,0 +1,13 @@
+//Written by Nick Martin for CS403 - Programming Languages
+//The purpose of error4 is to test for variable redefinition
+
+let a = 1;
+let b = 2;
+
+func someFunc(x, y) {
+    let a = "this is fine";
+    return (x + y);
+};
+
+let a = "but this is not";
+let c = 4;

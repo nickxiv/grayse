@@ -1,0 +1,8 @@
+//Written by Nick Martin for CS403 - Programming Languages
+//The purpose of error1 is to test for missing semicolons
+
+
+let a = 1;
+let b = 2;
+let error = "forgot semicolon here"
+let c = false;

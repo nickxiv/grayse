@@ -1,0 +1,11 @@
+//Written by Nick Martin for CS403 - Programming Languages
+//The purpose of error2 is to test for missing function names in function definitions
+
+let a = 1;
+let b = 2;
+
+func (x, y) {
+    return (x + y);
+};
+
+let c = sum(a, b);
