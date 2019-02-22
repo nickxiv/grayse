@@ -63,4 +63,6 @@ interface Types {
     public static final String ALLOBJPROPS  = "ALLOBJPROPS";
     public static final String OBJPROP      = "OBJPROP";
     public static final String UMINUS       = "UMINUS";
+    public static final String CLOSURE      = "CLOSURE";
 }
+

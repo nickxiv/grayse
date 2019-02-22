@@ -29,3 +29,8 @@ while (b < 10) {
     b = b + 1;
 };
 
+func doNothing() {
+    return;
+};
+
+

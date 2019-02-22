@@ -63,7 +63,7 @@ public class Evaluation implements Types {
 
             // //variable and function definitions
             // case OPTVARASSIGN: return evalVarDef(tree,env);
-            // case FUNCDEF: return evalFuncDef(tree,env);
+            case FUNCDEF: return evalFuncDef(tree,env);
             // //imperative constructs
             case IF: return evalIf(tree,env);
             case WHILE: return evalWhile(tree,env);
@@ -101,6 +101,12 @@ public class Evaluation implements Types {
         t = t.car();
         result = eval(t, env);
         return result;
+    }
+
+    static Lexeme evalFuncDef(Lexeme t, Lexeme env) {
+        Lexeme closure = cons(CLOSURE, env, t);
+        Environments.insert(t.car(), closure, env);
+        return closure;
     }
 
     static Lexeme evalOVA(Lexeme t, Lexeme env) {
