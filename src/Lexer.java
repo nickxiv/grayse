@@ -147,7 +147,6 @@ public class Lexer implements Types {
                 return new Lexeme(LET, CurrentLine);
             case "func":
                 return new Lexeme(FUNC, CurrentLine);
-
             case "return":
                 return new Lexeme(RETURN, CurrentLine);
             case "class":
@@ -162,6 +161,8 @@ public class Lexer implements Types {
                 return new Lexeme(TRUE, true, CurrentLine);
             case "false":
                 return new Lexeme(FALSE, false, CurrentLine);
+            case "lambda":
+                return new Lexeme(LAMBDA, CurrentLine);
             default:
                 return new Lexeme(VARIABLE, token, CurrentLine);
         }

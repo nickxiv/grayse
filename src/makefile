@@ -62,6 +62,20 @@ conditionals:
 conditionalsx:
 	@$(JRUN) tests/conditionals.gray
 
+iteration:
+	@cat tests/iteration.gray
+
+iterationx:
+	@$(JRUN) tests/iteration.gray
+
+functions:
+	@cat tests/functions.gray
+
+functionsx:
+	@$(JRUN) tests/functions.gray
+
+
+
 test: run
 
 run: test1 test2 test3

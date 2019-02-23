@@ -17,7 +17,7 @@ public class Environments implements Types {
 
     static Lexeme insert(Lexeme variable, Lexeme value, Lexeme env) {
         if(lookup(variable.value.toString(), env) != null) {
-            System.out.println("ERROR: redefinition of variable \'" + variable.value.toString() +"\' in local environment");
+            System.out.println("ERROR line: " + variable.lineNumber + ", redefinition of variable \'" + variable.value.toString() +"\'" );
             System.exit(1);
         }
         Lexeme table = env.car();
@@ -76,7 +76,12 @@ public class Environments implements Types {
 
             while (currVal != null) {
                 System.out.print("ID \'" + currVar.car().value + "\' ");
-                System.out.println("has value " + currVal.car().value);
+                if (currVal.car() != null) 
+                {
+                    System.out.println("has value ");
+                    PP.prettyPrint(currVal.car());
+                }
+                else System.out.println("is unassigned");
                 currVal = currVal.cdr();
                 currVar = currVar.cdr();
             }
@@ -94,9 +99,13 @@ public class Environments implements Types {
 
         while (currVal != null) {
             System.out.print("ID \'" + currVar.car().value + "\' ");
-            if (currVal.car() != null) System.out.println("has value " + currVal.car().value);
+            if (currVal.car() != null) {
+                System.out.print("has value ");
+                PP.prettyPrint(currVal.car());
+                System.out.println();
+            }
             else System.out.println("is unassigned");
-            currVal = currVal.cdr();
+        currVal = currVal.cdr();
             currVar = currVar.cdr();
         }
         System.out.println();

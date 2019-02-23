@@ -19,6 +19,9 @@ public class Evaluation implements Types {
         }
         Lexeme Tree;
         Lexeme e = Environments.create();
+
+        Environments.insert(new Lexeme(VARIABLE,"println", 0), new Lexeme(BUILTIN, "evalPrintLine", 0), e);
+
         Tree = program();
         eval(Tree, e);
 
@@ -28,6 +31,7 @@ public class Evaluation implements Types {
     }
 
     static Lexeme eval(Lexeme tree, Lexeme env) {
+        if (tree == null) return null;
         switch (tree.type)
             {
             //self evaluating
@@ -46,6 +50,7 @@ public class Evaluation implements Types {
             case MINUS:
             case TIMES:
             case DIVIDES:
+            case MOD:
             case ISEQUALTO:
             //...
             case LESSTHAN:
@@ -53,7 +58,7 @@ public class Evaluation implements Types {
 
             //AND and OR short-circuit
             case AND:
-            // case OR: return evalShortCircuitOp(tree,env);
+            case OR: return evalShortCircuitOp(tree,env);
             // //dot operator evals lhs, rhs a variable
             // case DOT: return evalDot(tree,env);
             // //assign operator evals rhs for sure
@@ -62,23 +67,28 @@ public class Evaluation implements Types {
             case GETS: return evalAssign(tree,env);
 
             // //variable and function definitions
-            // case OPTVARASSIGN: return evalVarDef(tree,env);
+            case OPTVARASSIGN: return evalVarDef(tree,env);
             case FUNCDEF: return evalFuncDef(tree,env);
+            case LAMBDA: return evalLambda(tree, env);
+
             // //imperative constructs
             case IF: return evalIf(tree,env);
             case WHILE: return evalWhile(tree,env);
+            case ELSE: return evalElse(tree, env);
+
             // //function calls
-            // case FUNCCALL: return evalFuncCall(tree,env);
+            case FUNCCALL: return evalFuncCall(tree,env);
 
             // //program and function body are parsed as blocks
             case BLOCK: return evalBlock(tree,env);
             case LINE: return evalLine(tree, env);
-            case OPTVARASSIGN: return evalOVA(tree, env);
 
             //others
             case UVARIABLE: return evalUVariable(tree, env);
+            case EXPRLIST: return evalExprList(tree, env);
             case TRUE: return new Lexeme(INTEGER, 1, tree.lineNumber);
             case FALSE: return new Lexeme(INTEGER, 0, tree.lineNumber);
+            case RETURN: return eval(tree.car(), env);
             default: 
                 System.out.println("IN EVAL, TYPE ISN'T IMPLEMENETED YET: " + tree.type);
                 System.exit(1);
@@ -109,11 +119,34 @@ public class Evaluation implements Types {
         return closure;
     }
 
-    static Lexeme evalOVA(Lexeme t, Lexeme env) {
-        Lexeme result = null;
+    static Lexeme evalLambda(Lexeme t, Lexeme env) {
+        return cons(CLOSURE, env, t);
+    }
+
+    static Lexeme evalFuncCall(Lexeme t, Lexeme env) {
+        Lexeme closure = eval(t.car(),env);                         //eval t.car() looks up func name in environment and returns the closure
+        Lexeme args    = t.cdr();                                   //args passed into func call
+        Lexeme params  = closure.cdr().cdr().car();                 //formal params of funcdef
+        Lexeme body    = closure.cdr().cdr().cdr();                 //body of func def
+        Lexeme senv    = closure.car();                             //environment of funcdef
+        Lexeme eargs   = null;
+        if (args != null) {
+            eargs   = eval(args, env);                           //evaluation of args over calling environment
+        }
+        Lexeme xenv    = Environments.extend(params, eargs, senv);  //environment of func definition extended with formal params set to values of evaluated args
+
+        return eval(body, xenv);
+    }
+
+    static Lexeme evalVarDef(Lexeme t, Lexeme env) {
         t = t.cdr();
-        result = eval(t, env);
-        return result;
+        Lexeme value = (t.cdr() != null ? eval(t.cdr(), env) : null);
+        Lexeme variables = t.car();
+        while (variables != null) {
+            Environments.insert(variables.car(), value, env);
+            variables = variables.cdr();
+        }
+        return value;
     }
 
     static Lexeme evalAssign(Lexeme t, Lexeme env) {
@@ -122,12 +155,7 @@ public class Evaluation implements Types {
 
         while(variables != null) {
             String varName = variables.car().value.toString();
-            if ((Environments.lookup(varName, env) != null)) {
-                Environments.update(varName, value.value, env);
-            }
-            else {
-                Environments.insert(variables.car(), value, env);
-            }
+            Environments.update(varName, value.value, env);
             variables = variables.cdr();
         }
         return value;
@@ -136,9 +164,16 @@ public class Evaluation implements Types {
 
     static Lexeme evalIf(Lexeme t, Lexeme env) {
         Lexeme cond = eval(t.car(), env);
-        if (cond.type == FALSE) return null;
+        if (cond.type == FALSE) {
+            if (t.cdr().cdr() != null) return eval(t.cdr().cdr(), env);
+            else return null;
+        }
         Lexeme block = eval(t.cdr().car(), env);
         return block;
+    }
+
+    static Lexeme evalElse(Lexeme t, Lexeme env) {
+        return eval(t.car(), env);
     }
 
     static Lexeme evalWhile(Lexeme t, Lexeme env) {
@@ -158,11 +193,38 @@ public class Evaluation implements Types {
         if (t.type == TIMES) return evalTimes(t, env);
         if (t.type == ISEQUALTO) return evalIsEqualTo(t, env);
         if (t.type == LESSTHAN) return evalLessThan(t, env);
+        if (t.type == MOD) return evalMod(t, env);
         else {
             System.out.println("IN EVALSIMPLEOP, TYPE ISN'T IMPLEMENTED YET: " + t.type);
             System.exit(1);
             return null;
         }
+    }
+
+    static Lexeme evalShortCircuitOp(Lexeme t, Lexeme env) {
+        if (t.type == OR) return evalOr(t, env);
+        if (t.type == AND) return evalAnd(t, env);
+        else {
+            System.out.println("IN EVALSHORTCIRCUITOP, TYPE ISN'T IMPLEMENTED YET: " + t.type);
+            System.exit(1);
+            return null;
+        }
+    }
+
+    static Lexeme evalOr(Lexeme t, Lexeme env) {
+        Lexeme left = eval(t.car(), env);
+        if ((int)left.value == 1) return new Lexeme(INTEGER, 1, t.lineNumber);
+        Lexeme right = eval(t.cdr(), env);
+        if ((int)right.value == 1) return new Lexeme (INTEGER, 1, t.lineNumber);
+        else return new Lexeme(INTEGER, 0, t.lineNumber);
+    }
+
+    static Lexeme evalAnd(Lexeme t, Lexeme env) {
+        Lexeme left = eval(t.car(), env);
+        if ((int)left.value == 0) return new Lexeme(INTEGER, 0, t.lineNumber);
+        Lexeme right = eval(t.cdr(), env);
+        if ((int)right.value == 0) return new Lexeme (INTEGER, 0, t.lineNumber);
+        else return new Lexeme(INTEGER, 1, t.lineNumber);
     }
 
     static Lexeme evalPlus(Lexeme t, Lexeme env) {
@@ -209,11 +271,11 @@ public class Evaluation implements Types {
             else return new Lexeme(FALSE, null, t.lineNumber);
         }
         else if (left.type == INTEGER && right.type == REAL) {
-            if ((double)left.value == (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            if ((int)left.value == (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
             else return new Lexeme(FALSE, null, t.lineNumber);
         }
         else if (left.type == REAL && right.type == INTEGER) {
-            if ((double)left.value == (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            if ((double)left.value == (int)right.value) return new Lexeme(TRUE, null, t.lineNumber);
             else return new Lexeme(FALSE, null, t.lineNumber);
         }
         else {
@@ -230,11 +292,11 @@ public class Evaluation implements Types {
             else return new Lexeme(FALSE, null, t.lineNumber);
         }
         else if (left.type == INTEGER && right.type == REAL) {
-            if ((double)left.value < (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            if ((int)left.value < (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
             else return new Lexeme(FALSE, null, t.lineNumber);
         }
         else if (left.type == REAL && right.type == INTEGER) {
-            if ((double)left.value < (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
+            if ((double)left.value < (int)right.value) return new Lexeme(TRUE, null, t.lineNumber);
             else return new Lexeme(FALSE, null, t.lineNumber);
         }
         else {
@@ -243,13 +305,27 @@ public class Evaluation implements Types {
         }
     }
 
-
-    static Lexeme evalUVariable(Lexeme t, Lexeme env) {
-        Lexeme value = eval(t.car(), env);
-        if (t.cdr() != null) eval(t.cdr(), env);
-        return value;
+    static Lexeme evalMod(Lexeme t, Lexeme env) {
+        Lexeme left = eval(t.car(), env);
+        Lexeme right = eval(t.cdr(), env);
+        return new Lexeme(INTEGER, (int)left.value % (int)right.value, t.lineNumber);
     }
 
+
+    static Lexeme evalUVariable(Lexeme t, Lexeme env) {
+        Lexeme variable = eval(t.car(), env);
+        if (t.cdr() == null) return variable;
+        else {
+            return eval(cons(FUNCCALL, t.car(), t.cdr().car()), env);           //t.car = funccall name, t.cdr.car = call args
+        }
+    }
+
+    static Lexeme evalExprList(Lexeme t, Lexeme env) {
+        Lexeme elist = new Lexeme(EXPRLIST, null, null);
+        elist.setCar(eval(t.car, env));
+        if (t.cdr != null) elist.setCdr(eval(t.cdr, env));      //t.cdr is either exprList or null
+        return elist;
+    }
 
     static Lexeme match(String type) throws IOException { //returns lexeme for parser
         Lexeme returnLexeme = matchNoAdvance(type);
@@ -438,9 +514,14 @@ public class Evaluation implements Types {
         return check(VARIABLE);
     }
 
+    static Lexeme optExpression() throws IOException {
+        if (expressionPending()) return expression();
+        else return null;
+    }
+
     static Lexeme returnStatement() throws IOException {
         match(RETURN);
-        Lexeme returns = optExpressionList();
+        Lexeme returns = optExpression();
         return cons(RETURN, returns, null);
     }
 
@@ -580,6 +661,17 @@ public class Evaluation implements Types {
             match(CPAREN);
             return cons(PARENEXPR, expr, null);
         }
+        else if (check(LAMBDA)) {
+            match(LAMBDA);
+            match(OPAREN);
+            Lexeme args = optExpressionList();
+            match(CPAREN);
+            match(OCURLY);
+            Lexeme block = block();
+            match(CCURLY);
+            return cons(LAMBDA, null, cons(GLUE, args, block));
+            
+        }
         else if (check(OCURLY)) {
             match(OCURLY);
             Lexeme op = objProperties();
@@ -609,6 +701,7 @@ public class Evaluation implements Types {
         check(FALSE) ||
         check(STRING) ||
         funcCallPending() ||
+        check(LAMBDA) ||
         check(MINUS) ||
         arrayPending() ||
         check(OPAREN) ||

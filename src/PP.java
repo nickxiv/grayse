@@ -143,6 +143,14 @@ public class PP implements Types {
                 printElseStatement(tree);
                 break;
 
+            case CLOSURE:
+                System.out.print("CLOSURE");
+                break;
+
+            case BUILTIN:
+                System.out.print("BUILTIN");
+                break;
+
             case ENDOFFILE:
                 System.out.println("REACHED ENDOFFILE");
                 System.exit(1);

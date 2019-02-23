@@ -64,5 +64,7 @@ interface Types {
     public static final String OBJPROP      = "OBJPROP";
     public static final String UMINUS       = "UMINUS";
     public static final String CLOSURE      = "CLOSURE";
+    public static final String BUILTIN      = "BUILTIN";
+    public static final String LAMBDA       = "LAMBDA";
 }
 
