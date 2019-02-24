@@ -62,6 +62,13 @@ conditionals:
 conditionalsx:
 	@$(JRUN) tests/conditionals.gray
 
+recursion:
+	@cat tests/recursion.gray
+
+recursionx:
+	@$(JRUN) tests/recursion.gray
+
+
 iteration:
 	@cat tests/iteration.gray
 

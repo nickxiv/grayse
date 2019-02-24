@@ -17,17 +17,14 @@ public class Evaluation implements Types {
         if (CurrentLexeme.type == ERROR) {
             return;
         }
+        
         Lexeme Tree;
         Lexeme e = Environments.create();
-
-        Environments.insert(new Lexeme(VARIABLE,"println", 0), new Lexeme(BUILTIN, "evalPrintLine", 0), e);
 
         Tree = program();
         eval(Tree, e);
 
         match(ENDOFFILE);
-
-        Environments.printAllEnvironments(e);
     }
 
     static Lexeme eval(Lexeme tree, Lexeme env) {
@@ -63,6 +60,11 @@ public class Evaluation implements Types {
             // case DOT: return evalDot(tree,env);
             // //assign operator evals rhs for sure
             // //    lhs is a variable or a dot operation
+
+            //classes and objects
+
+            case CLASSDEF: return evalClassDef(tree, env);
+            case CLASSPROP: return evalClassProp(tree, env);
 
             case GETS: return evalAssign(tree,env);
 
@@ -124,18 +126,40 @@ public class Evaluation implements Types {
     }
 
     static Lexeme evalFuncCall(Lexeme t, Lexeme env) {
-        Lexeme closure = eval(t.car(),env);                         //eval t.car() looks up func name in environment and returns the closure
+        String name = t.car.value.toString();
         Lexeme args    = t.cdr();                                   //args passed into func call
-        Lexeme params  = closure.cdr().cdr().car();                 //formal params of funcdef
-        Lexeme body    = closure.cdr().cdr().cdr();                 //body of func def
-        Lexeme senv    = closure.car();                             //environment of funcdef
         Lexeme eargs   = null;
         if (args != null) {
             eargs   = eval(args, env);                           //evaluation of args over calling environment
         }
+
+        //BUILTIN FUNCTIONS
+        if(name.equals("println")) return evalPrintLn(eargs);
+        if(name.equals("print")) return evalPrint(eargs);
+
+
+        Lexeme closure = eval(t.car(),env);                         //eval t.car() looks up func name in environment and returns the closure
+        if (closure == null) {
+            System.out.println("ERROR line " + t.lineNumber + ": function " + name + " not defined");
+            System.exit(1);
+            return null;
+        }
+        if (closure.type == OCLOSURE) return evalConstructor(closure, env);
+
+        Lexeme params  = closure.cdr().cdr().car();                 //formal params of funcdef
+        Lexeme body    = closure.cdr().cdr().cdr();                 //body of func def
+        Lexeme senv    = closure.car();                             //environment of funcdef
         Lexeme xenv    = Environments.extend(params, eargs, senv);  //environment of func definition extended with formal params set to values of evaluated args
 
         return eval(body, xenv);
+    }
+
+    static Lexeme evalConstructor(Lexeme closure, Lexeme env) {
+        Lexeme senv = closure.car();
+        Lexeme xenv = Environments.extend(null, null, senv);
+        Lexeme body = closure.cdr().cdr();
+        eval(body, xenv);
+        return xenv;
     }
 
     static Lexeme evalVarDef(Lexeme t, Lexeme env) {
@@ -147,6 +171,19 @@ public class Evaluation implements Types {
             variables = variables.cdr();
         }
         return value;
+    }
+
+    static Lexeme evalClassDef(Lexeme t, Lexeme env) {
+        Environments.insert(t.car(), cons(OCLOSURE, env, t), env);
+        return cons(OCLOSURE, env, t);
+    }
+
+    static Lexeme evalClassProp(Lexeme t, Lexeme env) {
+        while (t != null) {
+            Environments.insert(t.car(), null, env);
+            t = t.cdr();
+        }
+        return env;
     }
 
     static Lexeme evalAssign(Lexeme t, Lexeme env) {
@@ -325,6 +362,20 @@ public class Evaluation implements Types {
         elist.setCar(eval(t.car, env));
         if (t.cdr != null) elist.setCdr(eval(t.cdr, env));      //t.cdr is either exprList or null
         return elist;
+    }
+
+    static Lexeme evalPrintLn(Lexeme args) {
+        evalPrint(args);
+        System.out.println();
+        return args;
+    }
+
+    static Lexeme evalPrint(Lexeme args) {
+        while (args != null) {
+            System.out.print(args.car().value.toString());
+            args = args.cdr();
+        }
+        return args;
     }
 
     static Lexeme match(String type) throws IOException { //returns lexeme for parser

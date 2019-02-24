@@ -147,6 +147,10 @@ public class PP implements Types {
                 System.out.print("CLOSURE");
                 break;
 
+            case OCLOSURE:
+                Environments.printLocalEnvironment(tree.car());
+                break;
+
             case BUILTIN:
                 System.out.print("BUILTIN");
                 break;

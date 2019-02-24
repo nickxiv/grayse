@@ -1,5 +1,10 @@
-let square = lambda (num) {
-    return (num * num);
+func factorial(num) {
+    if (num == 1) {
+        return 1;
+    }
+    else {
+        return (num * (factorial(num - 1)));
+    };
 };
 
-let a = square(4);
+println(factorial(5));
