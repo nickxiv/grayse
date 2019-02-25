@@ -565,11 +565,6 @@ public class Evaluation implements Types {
 
         Lexeme size = args.car();
         Lexeme[] val = new Lexeme[(int)size.value];
-        if (val == null) {
-            System.out.println("ERROR: unable to allocate array");
-            System.exit(1);
-            return null;
-        }
         Lexeme array = new Lexeme(ARRAY, val, args.lineNumber);
         return array;
     }
