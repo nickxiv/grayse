@@ -11,3 +11,16 @@ let seventeenModTwo = modSeventeenBy(2);
 
 println("17 % 2 = ", (17 % 2));
 println("seventeenModTwo = ", seventeenModTwo);
+
+func f(x) {
+    func g(y) {
+        return x + y;
+    };
+    return g;
+};
+
+let z = f(3);
+let y = f(13);
+
+println(z(18));
+println(y(18));

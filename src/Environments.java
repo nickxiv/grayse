@@ -16,7 +16,7 @@ public class Environments implements Types {
     }
 
     static Lexeme insert(Lexeme variable, Lexeme value, Lexeme env) {
-        if(lookup(variable.value.toString(), env) != null) {
+        if(lookup(variable.value.toString(), env) != null && (variable.value.toString() != "this")) {
             System.out.println("ERROR line: " + variable.lineNumber + ", redefinition of variable \'" + variable.value.toString() +"\'" );
             System.exit(1);
         }

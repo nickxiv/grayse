@@ -5,10 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "CodeLens (Launch) - Recognizer",
+            "request": "launch",
+            "mainClass": "Recognizer",
+            "projectName": "grayse_42cb4780"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - PP",
+            "request": "launch",
+            "mainClass": "PP",
+            "projectName": "grayse_42cb4780"
+        },
+        {
             "name": "Java",
             "type": "java",
             "request": "launch",
             "stopOnEntry": true,
+            "args": [
+                "tests/lambda.gray"
+            ],
             "jdkPath": "${env:JAVA_HOME}/bin",
             "cwd": "${fileDirname}",
             "startupClass": "${fileBasenameNoExtension}",

@@ -1,7 +1,12 @@
-let iter = lambda (number) {
-    return number + 1;
+func f(x) {
+    return lambda (y) { 
+        x + y ;
+    };
 };
 
-let a = iter(2);
+let a = f(3);
+let b = f(11);
 
-println("a = ", a, ", and it should equal 3");
+println("a(5) is ", (a(5)));      // should be 8
+println("b(6) is ", (b(6)));      // should be 17
+println("a(10) is ", (a(10)));    // should be 13
