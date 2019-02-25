@@ -68,10 +68,6 @@ public class Evaluation implements Types {
         case AND:
         case OR:
             return evalShortCircuitOp(tree, env);
-        // //dot operator evals lhs, rhs a variable
-        // case DOT: return evalDot(tree,env);
-        // //assign operator evals rhs for sure
-        // // lhs is a variable or a dot operation
 
         // classes and objects
 
@@ -79,6 +75,11 @@ public class Evaluation implements Types {
             return evalClassDef(tree, env);
         case CLASSPROP:
             return evalClassProp(tree, env);
+        //dot operator evals lhs, rhs a variable
+        case DOT: return evalDot(tree,env);
+        //assign operator evals rhs for sure
+        // lhs is a variable or a dot operation
+
 
         case GETS:
             return evalAssign(tree, env);
@@ -237,14 +238,20 @@ public class Evaluation implements Types {
         return env;
     }
 
+    static Lexeme evalDot(Lexeme t, Lexeme env) throws IOException {
+        Lexeme obj = eval(t.car(), env);
+        Lexeme att = eval(t.cdr(), obj);
+        return att;
+    }
+
     static Lexeme evalAssign(Lexeme t, Lexeme env) throws IOException {
         Lexeme value = (t.cdr() != null ? eval(t.cdr(), env) : null);
         Lexeme variables = t.car();
 
         while (variables != null) {
             String varName = variables.car().value.toString();
-            Environments.update(varName, value.value, env);
-            variables = variables.cdr();
+                Environments.update(varName, value.value, env);
+                variables = variables.cdr();
         }
         return value;
 
@@ -314,10 +321,10 @@ public class Evaluation implements Types {
 
     static Lexeme evalOr(Lexeme t, Lexeme env) throws IOException {
         Lexeme left = eval(t.car(), env);
-        if ((int) left.value == 1)
+        if (left.type == TRUE || (int) left.value == 1)
             return new Lexeme(INTEGER, 1, t.lineNumber);
         Lexeme right = eval(t.cdr(), env);
-        if ((int) right.value == 1)
+        if (right.type == TRUE || (int) right.value == 1)
             return new Lexeme(INTEGER, 1, t.lineNumber);
         else
             return new Lexeme(INTEGER, 0, t.lineNumber);
@@ -325,10 +332,10 @@ public class Evaluation implements Types {
 
     static Lexeme evalAnd(Lexeme t, Lexeme env) throws IOException {
         Lexeme left = eval(t.car(), env);
-        if ((int) left.value == 0)
+        if (left.type == FALSE || (int) left.value == 0)
             return new Lexeme(INTEGER, 0, t.lineNumber);
         Lexeme right = eval(t.cdr(), env);
-        if ((int) right.value == 0)
+        if (right.value == FALSE || (int) right.value == 0)
             return new Lexeme(INTEGER, 0, t.lineNumber);
         else
             return new Lexeme(INTEGER, 1, t.lineNumber);
@@ -376,6 +383,7 @@ public class Evaluation implements Types {
     static Lexeme evalIsEqualTo(Lexeme t, Lexeme env) throws IOException {
         Lexeme left = eval(t.car(), env);
         Lexeme right = eval(t.cdr(), env);
+        if (left == null && right == null) return new Lexeme(TRUE, null, t.lineNumber);
         if (left.type == INTEGER && right.type == INTEGER) {
             if ((int) left.value == (int) right.value)
                 return new Lexeme(TRUE, null, t.lineNumber);
@@ -482,7 +490,8 @@ public class Evaluation implements Types {
 
     static Lexeme evalPrint(Lexeme args) {
         while (args != null) {
-            System.out.print(args.car().value.toString());
+            if (args.car() == null) System.out.print("NULL");
+            else System.out.print(args.car().value.toString());
             args = args.cdr();
         }
         return args;

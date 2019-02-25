@@ -1,0 +1,15 @@
+func node(value, next) {
+    return this;
+};
+
+let n2 = node(10, null);
+let n1 = node(5, n2);
+
+
+println(n1.value);
+
+n1.value = 6;
+
+println(n1.value);
+
+println("Trying to get n2.value from n1: ", n1.next.value);
