@@ -1,3 +1,40 @@
-func node(value, next) {
+func node(value, left, right) {
     return this;
 };
+
+func insert(root, value) {
+    if (root.value == null) {
+        root = node(value, null, null);
+    }
+    else if (value < root.value) {
+        insert(root.left, value);
+    }
+    else {
+        insert(root.right, value);
+    };
+
+    return root;
+
+};
+
+func search(root, value) {
+    if ((root.value == null) | (root.value == value)) {
+        return root.value;
+    }
+    else if (value < root.value) {
+        return search(root.left, value);
+    }
+    else {
+        return search(root.right, value);
+    };
+};
+
+let tree = node(null, null, null);
+let firstNode = node(3, null, null);
+
+println(firstNode.value);
+
+insert(tree, 3);
+
+println((search(tree, 3)), " = 3?");
+
