@@ -56,6 +56,13 @@ error5:
 error5x:
 	-@$(JRUN) tests/error5.gray
 
+arrays:
+	@cat tests/arrays.gray
+
+arraysx:
+	@$(JRUN) tests/arrays.gray
+
+
 conditionals:
 	@cat tests/conditionals.gray
 

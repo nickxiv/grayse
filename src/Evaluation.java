@@ -199,8 +199,8 @@ public class Evaluation implements Types {
         Lexeme params = closure.cdr().cdr().car(); // formal params of funcdef
         Lexeme body = closure.cdr().cdr().cdr(); // body of func def
         Lexeme senv = closure.car(); // environment of funcdef
-        Lexeme xenv = Environments.extend(params, eargs, senv); // environment of func definition extended with formal
-                                                                // params set to values of evaluated args
+        Lexeme xenv = Environments.extend(params, eargs, senv); // environment of func definition extended with formal params set to values of evaluated args
+        Environments.insert(new Lexeme(STRING, "this", args.lineNumber), xenv, xenv);
 
         return eval(body, xenv);
     }

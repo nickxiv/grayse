@@ -1,0 +1,11 @@
+let classes = newArray(4);
+let i = 0;
+setArray(classes, 0, "CS300");
+setArray(classes, 1, "CS301");
+setArray(classes, 2, "CS403");
+setArray(classes, 3, "CS491");
+let name = "";
+while (i < 4) {
+    println(getArray(classes, i));
+    i = i + 1;
+};
