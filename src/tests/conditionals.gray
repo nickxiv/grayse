@@ -32,6 +32,10 @@ if (false & true) {
     shortCircuit4 = true;
 };
 
+while(false & infinitelyLoopingFunctionOrSomethingThatHasAnErrorSuchAsThisFuncCallSinceItIsNotDefined()) {
+    println("This shouldn't print!");
+};
+
 println("Does true or false short circuit? ", intToPredicate(shortCircuit1));
 println("Does false or true short circuit? ", intToPredicate(shortCircuit2));
 println("Does true and false short circuit? ", intToPredicate(shortCircuit3));
