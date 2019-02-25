@@ -10,22 +10,6 @@ JRUN = java Evaluation
 default: 	
 	@$(JCC) $(JFLAGS) *.java
 
-
-test1:
-	$(JRUN) tests/test1.gray
-
-test2:
-	$(JRUN) tests/test2.gray
-
-test3:
-	$(JRUN) tests/test3.gray
-
-test4:
-	@$(JRUN) tests/test4.gray
-
-test5:
-	@$(JRUN) tests/test5.gray
-
 error1:
 	@cat tests/error1.gray
 
@@ -93,10 +77,6 @@ lambda:
 
 lambdax:
 	@$(JRUN) tests/lambda.gray
-
-test: run
-
-run: test1 test2 test3
 
 clean: 
 	@clear
