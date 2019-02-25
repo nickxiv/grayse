@@ -1,0 +1,7 @@
+let iter = lambda (number) {
+    return number + 1;
+};
+
+let a = iter(2);
+
+println("a = ", a, ", and it should equal 3");

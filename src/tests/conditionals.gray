@@ -5,6 +5,15 @@ let shortCircuit2 = 0;
 let shortCircuit3 = 0;
 let shortCircuit4 = 0;
 
+func intToPredicate(num) {
+    if (num == 0) {
+        return "no";
+    }
+    else {
+        return "yes";
+    };
+};
+
 
 
 if (true | false) {
@@ -22,3 +31,8 @@ if (true & false) {
 if (false & true) {
     shortCircuit4 = true;
 };
+
+println("Does true or false short circuit? ", intToPredicate(shortCircuit1));
+println("Does false or true short circuit? ", intToPredicate(shortCircuit2));
+println("Does true and false short circuit? ", intToPredicate(shortCircuit3));
+println("Does false and true short circuit? ", intToPredicate(shortCircuit4));

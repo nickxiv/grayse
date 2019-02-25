@@ -67,5 +67,7 @@ interface Types {
     public static final String BUILTIN      = "BUILTIN";
     public static final String LAMBDA       = "LAMBDA";
     public static final String OCLOSURE     = "OCLOSURE";
+    public static final String FILEPOINTER  = "FILEPOINTER";
+    public static final String DOESNOTEQUAL = "DOESNOTEQUAL";
 }
 

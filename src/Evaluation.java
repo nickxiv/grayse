@@ -1,23 +1,29 @@
+import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PushbackReader;
+import java.io.IOException;
 
 public class Evaluation implements Types {
+    static int argcCL;
+    static String[] argsCL;
     static Lexer lexer;
     static Lexeme CurrentLexeme;
 
     public static void main(String[] args) throws IOException {
         String fileName = args[0];
+        argsCL = args;
+        argcCL = args.length;
         lexer = new Lexer();
         FileReader fr = new FileReader(fileName);
-        lexer.Pbr = new PushbackReader(fr);
+        PushbackReader pr = new PushbackReader(fr);
+        lexer.Pbr = new PushbackReader(pr);
 
         CurrentLexeme = lexer.lex();
 
         if (CurrentLexeme.type == ERROR) {
             return;
         }
-        
+
         Lexeme Tree;
         Lexeme e = Environments.create();
 
@@ -27,78 +33,101 @@ public class Evaluation implements Types {
         match(ENDOFFILE);
     }
 
-    static Lexeme eval(Lexeme tree, Lexeme env) {
-        if (tree == null) return null;
-        switch (tree.type)
-            {
-            //self evaluating
-            case INTEGER:
-            case REAL:
-            case STRING: return tree;
+    static Lexeme eval(Lexeme tree, Lexeme env) throws IOException {
+        if (tree == null)
+            return null;
+        switch (tree.type) {
+        // self evaluating
+        case INTEGER:
+        case REAL:
+        case STRING:
+            return tree;
 
-            //find value of variables in the environment
-            case VARIABLE: return Environments.lookup(tree.value.toString(),env);
+        // find value of variables in the environment
+        case VARIABLE:
+            return Environments.lookup(tree.value.toString(), env);
 
-            //parenthesized expression
-            case PARENEXPR: return eval(tree.car(),env);
+        // parenthesized expression
+        case PARENEXPR:
+            return eval(tree.car(), env);
 
-            //operators (both sides evaluated)
-            case PLUS:
-            case MINUS:
-            case TIMES:
-            case DIVIDES:
-            case MOD:
-            case ISEQUALTO:
-            //...
-            case LESSTHAN:
-            case GREATERTHAN: return evalSimpleOp(tree,env);
+        // operators (both sides evaluated)
+        case PLUS:
+        case MINUS:
+        case TIMES:
+        case DIVIDES:
+        case MOD:
+        case ISEQUALTO:
+        case DOESNOTEQUAL:
+            // ...
+        case LESSTHAN:
+        case GREATERTHAN:
+            return evalSimpleOp(tree, env);
 
-            //AND and OR short-circuit
-            case AND:
-            case OR: return evalShortCircuitOp(tree,env);
-            // //dot operator evals lhs, rhs a variable
-            // case DOT: return evalDot(tree,env);
-            // //assign operator evals rhs for sure
-            // //    lhs is a variable or a dot operation
+        // AND and OR short-circuit
+        case AND:
+        case OR:
+            return evalShortCircuitOp(tree, env);
+        // //dot operator evals lhs, rhs a variable
+        // case DOT: return evalDot(tree,env);
+        // //assign operator evals rhs for sure
+        // // lhs is a variable or a dot operation
 
-            //classes and objects
+        // classes and objects
 
-            case CLASSDEF: return evalClassDef(tree, env);
-            case CLASSPROP: return evalClassProp(tree, env);
+        case CLASSDEF:
+            return evalClassDef(tree, env);
+        case CLASSPROP:
+            return evalClassProp(tree, env);
 
-            case GETS: return evalAssign(tree,env);
+        case GETS:
+            return evalAssign(tree, env);
 
-            // //variable and function definitions
-            case OPTVARASSIGN: return evalVarDef(tree,env);
-            case FUNCDEF: return evalFuncDef(tree,env);
-            case LAMBDA: return evalLambda(tree, env);
+        // //variable and function definitions
+        case OPTVARASSIGN:
+            return evalVarDef(tree, env);
+        case FUNCDEF:
+            return evalFuncDef(tree, env);
+        case LAMBDA:
+            return evalLambda(tree, env);
 
-            // //imperative constructs
-            case IF: return evalIf(tree,env);
-            case WHILE: return evalWhile(tree,env);
-            case ELSE: return evalElse(tree, env);
+        // //imperative constructs
+        case IF:
+            return evalIf(tree, env);
+        case WHILE:
+            return evalWhile(tree, env);
+        case ELSE:
+            return evalElse(tree, env);
 
-            // //function calls
-            case FUNCCALL: return evalFuncCall(tree,env);
+        // //function calls
+        case FUNCCALL:
+            return evalFuncCall(tree, env);
 
-            // //program and function body are parsed as blocks
-            case BLOCK: return evalBlock(tree,env);
-            case LINE: return evalLine(tree, env);
+        // //program and function body are parsed as blocks
+        case BLOCK:
+            return evalBlock(tree, env);
+        case LINE:
+            return evalLine(tree, env);
 
-            //others
-            case UVARIABLE: return evalUVariable(tree, env);
-            case EXPRLIST: return evalExprList(tree, env);
-            case TRUE: return new Lexeme(INTEGER, 1, tree.lineNumber);
-            case FALSE: return new Lexeme(INTEGER, 0, tree.lineNumber);
-            case RETURN: return eval(tree.car(), env);
-            default: 
-                System.out.println("IN EVAL, TYPE ISN'T IMPLEMENETED YET: " + tree.type);
-                System.exit(1);
-                return null;
-            }
+        // others
+        case UVARIABLE:
+            return evalUVariable(tree, env);
+        case EXPRLIST:
+            return evalExprList(tree, env);
+        case TRUE:
+            return new Lexeme(INTEGER, 1, tree.lineNumber);
+        case FALSE:
+            return new Lexeme(INTEGER, 0, tree.lineNumber);
+        case RETURN:
+            return eval(tree.car(), env);
+        default:
+            System.out.println("IN EVAL, TYPE ISN'T IMPLEMENETED YET: " + tree.type);
+            System.exit(1);
+            return null;
         }
+    }
 
-    static Lexeme evalBlock(Lexeme t, Lexeme env) {
+    static Lexeme evalBlock(Lexeme t, Lexeme env) throws IOException {
         Lexeme result = null;
         t = t.car();
         while (t != null) {
@@ -108,7 +137,7 @@ public class Evaluation implements Types {
         return result;
     }
 
-    static Lexeme evalLine(Lexeme t, Lexeme env) {
+    static Lexeme evalLine(Lexeme t, Lexeme env) throws IOException {
         Lexeme result = null;
         t = t.car();
         result = eval(t, env);
@@ -125,36 +154,58 @@ public class Evaluation implements Types {
         return cons(CLOSURE, env, t);
     }
 
-    static Lexeme evalFuncCall(Lexeme t, Lexeme env) {
+    static Lexeme evalFuncCall(Lexeme t, Lexeme env) throws IOException {
         String name = t.car.value.toString();
-        Lexeme args    = t.cdr();                                   //args passed into func call
-        Lexeme eargs   = null;
+        Lexeme args = t.cdr(); // args passed into func call
+        Lexeme eargs = null;
         if (args != null) {
-            eargs   = eval(args, env);                           //evaluation of args over calling environment
+            eargs = eval(args, env); // evaluation of args over calling environment
         }
 
-        //BUILTIN FUNCTIONS
-        if(name.equals("println")) return evalPrintLn(eargs);
-        if(name.equals("print")) return evalPrint(eargs);
+        // BUILTIN FUNCTIONS
+        if (name.equals("println"))
+            return evalPrintLn(eargs);
+        if (name.equals("print"))
+            return evalPrint(eargs);
+        if (name.equals("argc"))
+            return evalGetArgCount();
+        if (name.equals("argv"))
+            return evalGetArg(eargs);
+        if (name.equals("openFileForReading"))
+            return evalOpenFileForReading(eargs);
+        if (name.equals("readInteger"))
+            return evalReadInteger(eargs);
+        if (name.equals("atFileEnd"))
+            return evalAtFileEnd(eargs);
+        if (name.equals("closeFile"))
+            return evalCloseFile(eargs);
+        if (name.equals("newArray"))
+            return evalNewArray(eargs);
+        if (name.equals("getArray"))
+            return evalGetArray(eargs);
+        if (name.equals("setArray"))
+            return evalSetArray(eargs);
 
 
-        Lexeme closure = eval(t.car(),env);                         //eval t.car() looks up func name in environment and returns the closure
+        Lexeme closure = eval(t.car(), env); // eval t.car() looks up func name in environment and returns the closure
         if (closure == null) {
             System.out.println("ERROR line " + t.lineNumber + ": function " + name + " not defined");
             System.exit(1);
             return null;
         }
-        if (closure.type == OCLOSURE) return evalConstructor(closure, env);
+        if (closure.type == OCLOSURE)
+            return evalConstructor(closure, env);
 
-        Lexeme params  = closure.cdr().cdr().car();                 //formal params of funcdef
-        Lexeme body    = closure.cdr().cdr().cdr();                 //body of func def
-        Lexeme senv    = closure.car();                             //environment of funcdef
-        Lexeme xenv    = Environments.extend(params, eargs, senv);  //environment of func definition extended with formal params set to values of evaluated args
+        Lexeme params = closure.cdr().cdr().car(); // formal params of funcdef
+        Lexeme body = closure.cdr().cdr().cdr(); // body of func def
+        Lexeme senv = closure.car(); // environment of funcdef
+        Lexeme xenv = Environments.extend(params, eargs, senv); // environment of func definition extended with formal
+                                                                // params set to values of evaluated args
 
         return eval(body, xenv);
     }
 
-    static Lexeme evalConstructor(Lexeme closure, Lexeme env) {
+    static Lexeme evalConstructor(Lexeme closure, Lexeme env) throws IOException {
         Lexeme senv = closure.car();
         Lexeme xenv = Environments.extend(null, null, senv);
         Lexeme body = closure.cdr().cdr();
@@ -162,7 +213,7 @@ public class Evaluation implements Types {
         return xenv;
     }
 
-    static Lexeme evalVarDef(Lexeme t, Lexeme env) {
+    static Lexeme evalVarDef(Lexeme t, Lexeme env) throws IOException {
         t = t.cdr();
         Lexeme value = (t.cdr() != null ? eval(t.cdr(), env) : null);
         Lexeme variables = t.car();
@@ -186,51 +237,62 @@ public class Evaluation implements Types {
         return env;
     }
 
-    static Lexeme evalAssign(Lexeme t, Lexeme env) {
+    static Lexeme evalAssign(Lexeme t, Lexeme env) throws IOException {
         Lexeme value = (t.cdr() != null ? eval(t.cdr(), env) : null);
         Lexeme variables = t.car();
 
-        while(variables != null) {
+        while (variables != null) {
             String varName = variables.car().value.toString();
             Environments.update(varName, value.value, env);
             variables = variables.cdr();
         }
         return value;
-        
+
     }
 
-    static Lexeme evalIf(Lexeme t, Lexeme env) {
+    static Lexeme evalIf(Lexeme t, Lexeme env) throws IOException {
         Lexeme cond = eval(t.car(), env);
         if (cond.type == FALSE) {
-            if (t.cdr().cdr() != null) return eval(t.cdr().cdr(), env);
-            else return null;
+            if (t.cdr().cdr() != null)
+                return eval(t.cdr().cdr(), env);
+            else
+                return null;
         }
         Lexeme block = eval(t.cdr().car(), env);
         return block;
     }
 
-    static Lexeme evalElse(Lexeme t, Lexeme env) {
+    static Lexeme evalElse(Lexeme t, Lexeme env) throws IOException {
         return eval(t.car(), env);
     }
 
-    static Lexeme evalWhile(Lexeme t, Lexeme env) {
+    static Lexeme evalWhile(Lexeme t, Lexeme env) throws IOException {
         Lexeme cond = eval(t.car(), env);
-        if (cond.type == FALSE) return null;
+        if (cond.type == FALSE)
+            return null;
         Lexeme block = null;
         while (cond.type == TRUE) {
-            block = eval(t.cdr().car(), env);
+            block = eval(t.cdr(), env);
             cond = eval(t.car(), env);
         }
         return block;
     }
 
-    static Lexeme evalSimpleOp(Lexeme t, Lexeme env) {
-        if (t.type == PLUS) return evalPlus(t,env);
-        if (t.type == MINUS) return evalMinus(t,env);
-        if (t.type == TIMES) return evalTimes(t, env);
-        if (t.type == ISEQUALTO) return evalIsEqualTo(t, env);
-        if (t.type == LESSTHAN) return evalLessThan(t, env);
-        if (t.type == MOD) return evalMod(t, env);
+    static Lexeme evalSimpleOp(Lexeme t, Lexeme env) throws IOException {
+        if (t.type == PLUS)
+            return evalPlus(t, env);
+        if (t.type == MINUS)
+            return evalMinus(t, env);
+        if (t.type == TIMES)
+            return evalTimes(t, env);
+        if (t.type == ISEQUALTO)
+            return evalIsEqualTo(t, env);
+        if (t.type == DOESNOTEQUAL)
+            return evalDoesNotEqual(t, env);
+        if (t.type == LESSTHAN)
+            return evalLessThan(t, env);
+        if (t.type == MOD)
+            return evalMod(t, env);
         else {
             System.out.println("IN EVALSIMPLEOP, TYPE ISN'T IMPLEMENTED YET: " + t.type);
             System.exit(1);
@@ -238,9 +300,11 @@ public class Evaluation implements Types {
         }
     }
 
-    static Lexeme evalShortCircuitOp(Lexeme t, Lexeme env) {
-        if (t.type == OR) return evalOr(t, env);
-        if (t.type == AND) return evalAnd(t, env);
+    static Lexeme evalShortCircuitOp(Lexeme t, Lexeme env) throws IOException {
+        if (t.type == OR)
+            return evalOr(t, env);
+        if (t.type == AND)
+            return evalAnd(t, env);
         else {
             System.out.println("IN EVALSHORTCIRCUITOP, TYPE ISN'T IMPLEMENTED YET: " + t.type);
             System.exit(1);
@@ -248,119 +312,165 @@ public class Evaluation implements Types {
         }
     }
 
-    static Lexeme evalOr(Lexeme t, Lexeme env) {
+    static Lexeme evalOr(Lexeme t, Lexeme env) throws IOException {
         Lexeme left = eval(t.car(), env);
-        if ((int)left.value == 1) return new Lexeme(INTEGER, 1, t.lineNumber);
+        if ((int) left.value == 1)
+            return new Lexeme(INTEGER, 1, t.lineNumber);
         Lexeme right = eval(t.cdr(), env);
-        if ((int)right.value == 1) return new Lexeme (INTEGER, 1, t.lineNumber);
-        else return new Lexeme(INTEGER, 0, t.lineNumber);
+        if ((int) right.value == 1)
+            return new Lexeme(INTEGER, 1, t.lineNumber);
+        else
+            return new Lexeme(INTEGER, 0, t.lineNumber);
     }
 
-    static Lexeme evalAnd(Lexeme t, Lexeme env) {
+    static Lexeme evalAnd(Lexeme t, Lexeme env) throws IOException {
         Lexeme left = eval(t.car(), env);
-        if ((int)left.value == 0) return new Lexeme(INTEGER, 0, t.lineNumber);
+        if ((int) left.value == 0)
+            return new Lexeme(INTEGER, 0, t.lineNumber);
         Lexeme right = eval(t.cdr(), env);
-        if ((int)right.value == 0) return new Lexeme (INTEGER, 0, t.lineNumber);
-        else return new Lexeme(INTEGER, 1, t.lineNumber);
+        if ((int) right.value == 0)
+            return new Lexeme(INTEGER, 0, t.lineNumber);
+        else
+            return new Lexeme(INTEGER, 1, t.lineNumber);
     }
 
-    static Lexeme evalPlus(Lexeme t, Lexeme env) {
-        Lexeme left = eval(t.car(),env);
-        Lexeme right = eval(t.cdr(),env);
+    static Lexeme evalPlus(Lexeme t, Lexeme env) throws IOException {
+        Lexeme left = eval(t.car(), env);
+        Lexeme right = eval(t.cdr(), env);
         if (left.type == INTEGER && right.type == INTEGER)
-            return new Lexeme(INTEGER, (int)left.value + (int)right.value, t.lineNumber);
+            return new Lexeme(INTEGER, (int) left.value + (int) right.value, t.lineNumber);
         else if (left.type == INTEGER && right.type == REAL)
-            return new Lexeme(REAL, (int)left.value + (double)right.value, t.lineNumber);
+            return new Lexeme(REAL, (int) left.value + (double) right.value, t.lineNumber);
         else if (left.type == REAL && right.type == INTEGER)
-            return new Lexeme(REAL, (double)left.value + (int)right.value, t.lineNumber);
-        else return new Lexeme(REAL, (double)left.value + (double)left.value, t.lineNumber);
+            return new Lexeme(REAL, (double) left.value + (int) right.value, t.lineNumber);
+        else
+            return new Lexeme(REAL, (double) left.value + (double) left.value, t.lineNumber);
     }
 
-    static Lexeme evalMinus(Lexeme t, Lexeme env) {
-        Lexeme left = eval(t.car(),env);
-        Lexeme right = eval(t.cdr(),env);
+    static Lexeme evalMinus(Lexeme t, Lexeme env) throws IOException {
+        Lexeme left = eval(t.car(), env);
+        Lexeme right = eval(t.cdr(), env);
         if (left.type == INTEGER && right.type == INTEGER)
-            return new Lexeme(INTEGER, (int)left.value - (int)right.value, t.lineNumber);
+            return new Lexeme(INTEGER, (int) left.value - (int) right.value, t.lineNumber);
         else if (left.type == INTEGER && right.type == REAL)
-            return new Lexeme(REAL, (int)left.value - (double)right.value, t.lineNumber);
+            return new Lexeme(REAL, (int) left.value - (double) right.value, t.lineNumber);
         else if (left.type == REAL && right.type == INTEGER)
-            return new Lexeme(REAL, (double)left.value - (int)right.value, t.lineNumber);
-        else return new Lexeme(REAL, (double)left.value - (double)left.value, t.lineNumber);
+            return new Lexeme(REAL, (double) left.value - (int) right.value, t.lineNumber);
+        else
+            return new Lexeme(REAL, (double) left.value - (double) left.value, t.lineNumber);
     }
 
-    static Lexeme evalTimes(Lexeme t, Lexeme env) {
-        Lexeme left = eval(t.car(),env);
-        Lexeme right = eval(t.cdr(),env);
+    static Lexeme evalTimes(Lexeme t, Lexeme env) throws IOException {
+        Lexeme left = eval(t.car(), env);
+        Lexeme right = eval(t.cdr(), env);
         if (left.type == INTEGER && right.type == INTEGER)
-            return new Lexeme(INTEGER, (int)left.value * (int)right.value, t.lineNumber);
+            return new Lexeme(INTEGER, (int) left.value * (int) right.value, t.lineNumber);
         else if (left.type == INTEGER && right.type == REAL)
-            return new Lexeme(REAL, (int)left.value * (double)right.value, t.lineNumber);
+            return new Lexeme(REAL, (int) left.value * (double) right.value, t.lineNumber);
         else if (left.type == REAL && right.type == INTEGER)
-            return new Lexeme(REAL, (double)left.value * (int)right.value, t.lineNumber);
-        else return new Lexeme(REAL, (double)left.value * (double)left.value, t.lineNumber);
+            return new Lexeme(REAL, (double) left.value * (int) right.value, t.lineNumber);
+        else
+            return new Lexeme(REAL, (double) left.value * (double) left.value, t.lineNumber);
     }
 
-    static Lexeme evalIsEqualTo(Lexeme t, Lexeme env) {
+    static Lexeme evalIsEqualTo(Lexeme t, Lexeme env) throws IOException {
         Lexeme left = eval(t.car(), env);
         Lexeme right = eval(t.cdr(), env);
         if (left.type == INTEGER && right.type == INTEGER) {
-            if ((int)left.value == (int)right.value) return new Lexeme(TRUE, null, t.lineNumber);
-            else return new Lexeme(FALSE, null, t.lineNumber);
-        }
-        else if (left.type == INTEGER && right.type == REAL) {
-            if ((int)left.value == (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
-            else return new Lexeme(FALSE, null, t.lineNumber);
-        }
-        else if (left.type == REAL && right.type == INTEGER) {
-            if ((double)left.value == (int)right.value) return new Lexeme(TRUE, null, t.lineNumber);
-            else return new Lexeme(FALSE, null, t.lineNumber);
-        }
-        else {
-            if ((double)left.value == (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
-            else return new Lexeme(FALSE, null, t.lineNumber);
+            if ((int) left.value == (int) right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else if (left.type == INTEGER && right.type == REAL) {
+            if ((int) left.value == (double) right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else if (left.type == REAL && right.type == INTEGER) {
+            if ((double) left.value == (int) right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else {
+            if ((double) left.value == (double) right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
         }
     }
-
-    static Lexeme evalLessThan(Lexeme t, Lexeme env) {
+    static Lexeme evalDoesNotEqual(Lexeme t, Lexeme env) throws IOException {
         Lexeme left = eval(t.car(), env);
         Lexeme right = eval(t.cdr(), env);
         if (left.type == INTEGER && right.type == INTEGER) {
-            if ((int)left.value < (int)right.value) return new Lexeme(TRUE, null, t.lineNumber);
-            else return new Lexeme(FALSE, null, t.lineNumber);
-        }
-        else if (left.type == INTEGER && right.type == REAL) {
-            if ((int)left.value < (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
-            else return new Lexeme(FALSE, null, t.lineNumber);
-        }
-        else if (left.type == REAL && right.type == INTEGER) {
-            if ((double)left.value < (int)right.value) return new Lexeme(TRUE, null, t.lineNumber);
-            else return new Lexeme(FALSE, null, t.lineNumber);
-        }
-        else {
-            if ((double)left.value < (double)right.value) return new Lexeme(TRUE, null, t.lineNumber);
-            else return new Lexeme(FALSE, null, t.lineNumber);
+            if ((int)left.value != (int)right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else if (left.type == INTEGER && right.type == REAL) {
+            if ((int)left.value != (double)right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else if (left.type == REAL && right.type == INTEGER) {
+            if ((double)left.value != (int)right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else {
+            if ((double)left.value != (double)right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
         }
     }
 
-    static Lexeme evalMod(Lexeme t, Lexeme env) {
+
+    static Lexeme evalLessThan(Lexeme t, Lexeme env) throws IOException {
         Lexeme left = eval(t.car(), env);
         Lexeme right = eval(t.cdr(), env);
-        return new Lexeme(INTEGER, (int)left.value % (int)right.value, t.lineNumber);
+        if (left.type == INTEGER && right.type == INTEGER) {
+            if ((int) left.value < (int) right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else if (left.type == INTEGER && right.type == REAL) {
+            if ((int) left.value < (double) right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else if (left.type == REAL && right.type == INTEGER) {
+            if ((double) left.value < (int) right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        } else {
+            if ((double) left.value < (double) right.value)
+                return new Lexeme(TRUE, null, t.lineNumber);
+            else
+                return new Lexeme(FALSE, null, t.lineNumber);
+        }
     }
 
+    static Lexeme evalMod(Lexeme t, Lexeme env) throws IOException {
+        Lexeme left = eval(t.car(), env);
+        Lexeme right = eval(t.cdr(), env);
+        return new Lexeme(INTEGER, (int) left.value % (int) right.value, t.lineNumber);
+    }
 
-    static Lexeme evalUVariable(Lexeme t, Lexeme env) {
+    static Lexeme evalUVariable(Lexeme t, Lexeme env) throws IOException {
         Lexeme variable = eval(t.car(), env);
-        if (t.cdr() == null) return variable;
+        if (t.cdr() == null)
+            return variable;
         else {
-            return eval(cons(FUNCCALL, t.car(), t.cdr().car()), env);           //t.car = funccall name, t.cdr.car = call args
+            return eval(cons(FUNCCALL, t.car(), t.cdr().car()), env); // t.car = funccall name, t.cdr.car = call args
         }
     }
 
-    static Lexeme evalExprList(Lexeme t, Lexeme env) {
+    static Lexeme evalExprList(Lexeme t, Lexeme env) throws IOException {
         Lexeme elist = new Lexeme(EXPRLIST, null, null);
         elist.setCar(eval(t.car, env));
-        if (t.cdr != null) elist.setCdr(eval(t.cdr, env));      //t.cdr is either exprList or null
+        if (t.cdr != null)
+            elist.setCdr(eval(t.cdr, env)); // t.cdr is either exprList or null
         return elist;
     }
 
@@ -377,6 +487,116 @@ public class Evaluation implements Types {
         }
         return args;
     }
+
+    static Lexeme evalGetArgCount() {
+        return new Lexeme(INTEGER, argcCL, 0);
+    }
+
+    static Lexeme evalGetArg(Lexeme args) {
+        Lexeme index = args.car();
+        return new Lexeme(STRING, argsCL[Integer.parseInt(index.value.toString())], args.lineNumber);
+    }
+
+    static Lexeme evalOpenFileForReading(Lexeme args) throws FileNotFoundException {
+        Lexeme fileName  = args.car();
+        Lexeme fp = new Lexeme(FILEPOINTER, null, args.lineNumber);
+        FileReader fr = new FileReader(fileName.value.toString());
+        fp.value = new PushbackReader(fr);
+        return fp;
+    }
+
+    static Lexeme evalReadInteger(Lexeme args) throws IOException {
+        PushbackReader fp = (PushbackReader)args.car().value;
+        if (fp == null) {
+            System.out.println("ERROR: can't read empty file");
+            System.exit(1);
+            return null;
+        }
+        int i = 0;
+        char ch = ' ';
+        String token = "";
+        
+
+        i = fp.read();
+        if (i == -1) return new Lexeme(ENDOFFILE, args.lineNumber);
+        ch = (char)i;
+
+        while (Character.isDigit(ch)) {
+            token = token + ch;
+            i = fp.read();
+            ch = (char)i;
+        }
+
+        fp.unread(i);
+
+        int x = Integer.parseInt(token);
+
+        return new Lexeme(INTEGER, x, args.lineNumber);
+    }
+
+    static Lexeme evalAtFileEnd(Lexeme args) throws IOException {
+        PushbackReader fp = (PushbackReader)args.car().value;
+        int x = fp.read();
+        if (x == -1) return new Lexeme(INTEGER, 1, args.lineNumber);
+        else return new Lexeme(INTEGER, 0, args.lineNumber);
+    }
+
+    static Lexeme evalCloseFile(Lexeme args) throws IOException {
+        PushbackReader fp = (PushbackReader)args.car().value;
+        fp.close();
+        return new Lexeme (TRUE, args.lineNumber);
+    }
+
+    static Lexeme evalNewArray(Lexeme args) throws IOException {
+        if (args == null || args.cdr() != null) {
+            System.out.println("ERROR line " + args.lineNumber + ": initialize new array with size of array");
+            System.exit(1);
+            return null;
+        }
+
+        Lexeme size = args.car();
+        Lexeme[] val = new Lexeme[(int)size.value];
+        if (val == null) {
+            System.out.println("ERROR: unable to allocate array");
+            System.exit(1);
+            return null;
+        }
+        Lexeme array = new Lexeme(ARRAY, val, args.lineNumber);
+        return array;
+    }
+
+    static Lexeme evalGetArray(Lexeme args) throws IOException {
+        if (args == null || args.cdr() == null || args.cdr().cdr() != null) {
+            System.out.println("ERROR line " + args.lineNumber + ": usage is getArray(arrayName, index)");
+            System.exit(1);
+            return null;
+        }
+        Lexeme a = args.car();
+        Lexeme[] array = (Lexeme[])a.value;
+
+        int index = (int)args.cdr().car().value;
+        return array[index];
+    }
+
+    static Lexeme evalSetArray(Lexeme args) throws IOException {
+        if (args == null || args.cdr() == null || args.cdr().cdr() == null || args.cdr().cdr().cdr() != null) {
+            System.out.println("ERROR line " + args.lineNumber + ": usage is setArray(arrayName, index, value)");
+            System.exit(1);
+            return null;
+        }
+        Lexeme arr = args.car();
+        Lexeme ind = args.cdr().car();
+        Lexeme val = args.cdr().cdr().car();
+
+        Lexeme[] tempArray = (Lexeme[])arr.value;
+        tempArray[(int)ind.value] = val;
+
+        arr.value = tempArray;
+
+        return arr;
+    }
+
+
 
     static Lexeme match(String type) throws IOException { //returns lexeme for parser
         Lexeme returnLexeme = matchNoAdvance(type);
@@ -817,6 +1037,7 @@ public class Evaluation implements Types {
         else if (check(LESSTHAN)) return match(LESSTHAN);
         else if (check(GREATERTHAN)) return match(GREATERTHAN);
         else if (check(ISEQUALTO)) return match(ISEQUALTO);
+        else if (check(DOESNOTEQUAL)) return match(DOESNOTEQUAL);
         else if (check(GETS)) return match(GETS);
         else if (check(DOT)) return match(DOT);
         else {
@@ -839,6 +1060,7 @@ public class Evaluation implements Types {
         check(LESSTHAN) ||
         check(GREATERTHAN) ||
         check(ISEQUALTO) ||
+        check(DOESNOTEQUAL) ||
         check(GETS) ||
         check(DOT);
     }

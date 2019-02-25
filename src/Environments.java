@@ -32,7 +32,13 @@ public class Environments implements Types {
             Lexeme vars = table.car();
             Lexeme vals = table.cdr();
             while (vars != null) {
-                if (sameVariable(variable, vars.car())) return vals.car();
+                if (vars.car().type == UVARIABLE) {
+                    if (sameVariable(variable, vars.car().car())) return vals.car();
+                }
+                else {
+                    if (sameVariable(variable, vars.car())) return vals.car();
+
+                }
                 vars = vars.cdr();
                 vals = vals.cdr();    
             }

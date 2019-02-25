@@ -1,6 +1,10 @@
 let a = 1;
 
+println("a = ", a);
+
 while (a < 99) {
     a = a + 1;
 };
+
+println("after iteration, a = ", a);
 

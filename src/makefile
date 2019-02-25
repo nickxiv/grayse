@@ -81,7 +81,11 @@ functions:
 functionsx:
 	@$(JRUN) tests/functions.gray
 
+lambda:
+	@cat tests/lambda.gray
 
+lambdax:
+	@$(JRUN) tests/lambda.gray
 
 test: run
 

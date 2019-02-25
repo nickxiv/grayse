@@ -1,10 +1,12 @@
-func factorial(num) {
-    if (num == 1) {
-        return 1;
-    }
-    else {
-        return (num * (factorial(num - 1)));
-    };
+let classes = newArray(4);
+let i = 0;
+setArray(classes, 0, "CS300");
+setArray(classes, 1, "CS301");
+setArray(classes, 2, "CS403");
+setArray(classes, 3, "CS491");
+let name = "";
+while (i < 4) {
+    name = getArray(classes, i);
+    println(name);
+    i = i + 1;
 };
-
-println(factorial(5));
