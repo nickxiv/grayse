@@ -49,7 +49,10 @@ array: OPENBRACKET optExpressionList CLOSEBRACKET
 
 whileStatement: WHILE OPENPARENTHESIS expression CLOSEPARENTHESIS OPENCURLY block CLOSECURLY
 
-returnStatement: RETURN optExpressionList
+returnStatement: RETURN optExpression
+
+optExpression: expression
+             | *empty*
 
 optExpressionList: expressionList
                  | *empty*
@@ -70,6 +73,7 @@ unary: INTEGER
      | array
      | NOT
      | OPENPARENTHESIS expression CLOSEPARENTHESIS
+     | LAMBDA OPAREN optExpressionList CPAREN  OPENCURLY block CLOSECURLY
      | OPENCURLY objProperties CLOSECURLY
 
 uVariable: VARIABLE

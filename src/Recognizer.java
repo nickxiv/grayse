@@ -305,6 +305,14 @@ public class Recognizer implements Types {
         else if (check(TRUE)) match(TRUE);
         else if (check(FALSE)) match(FALSE);
         else if (check(STRING)) match(STRING);
+        else if (check(LAMBDA)) {
+            match(LAMBDA);
+            match(OPAREN);
+            optExpressionList();
+            match(CPAREN);
+            match(OCURLY);
+            block();
+        }
         else if (check(MINUS)) {
             match(MINUS);
             unary();
@@ -344,6 +352,7 @@ public class Recognizer implements Types {
         check(FALSE) ||
         check(STRING) ||
         funcCallPending() ||
+        check(LAMBDA) ||
         check(MINUS) ||
         arrayPending() ||
         check(OPAREN) ||

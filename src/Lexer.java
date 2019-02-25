@@ -43,7 +43,14 @@ public class Lexer implements Types {
             case ':': return new Lexeme(COLON, CurrentLine); 
             case '{': return new Lexeme(OCURLY, CurrentLine);
             case '}': return new Lexeme(CCURLY, CurrentLine);
-            case '!': return new Lexeme(NOT, CurrentLine);
+            case '!': 
+                i = this.Pbr.read();
+                ch = (char)i;
+                if (ch == '=') return new Lexeme(DOESNOTEQUAL, CurrentLine);
+                else {
+                    this.Pbr.unread(i);
+                    return new Lexeme(NOT, CurrentLine);
+                } 
             case '|': return new Lexeme(OR, CurrentLine);
             case '&': return new Lexeme(AND, CurrentLine);
             case '.':
@@ -147,7 +154,6 @@ public class Lexer implements Types {
                 return new Lexeme(LET, CurrentLine);
             case "func":
                 return new Lexeme(FUNC, CurrentLine);
-
             case "return":
                 return new Lexeme(RETURN, CurrentLine);
             case "class":
@@ -162,6 +168,8 @@ public class Lexer implements Types {
                 return new Lexeme(TRUE, true, CurrentLine);
             case "false":
                 return new Lexeme(FALSE, false, CurrentLine);
+            case "lambda":
+                return new Lexeme(LAMBDA, CurrentLine);
             default:
                 return new Lexeme(VARIABLE, token, CurrentLine);
         }

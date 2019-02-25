@@ -1,0 +1,16 @@
+//Written by Nick Martin for CS403 - Programming Languages
+//The purpose of error3 is to test for missing colons
+
+class Person {
+    age;
+    firstName;
+    lastName;
+    forgottenColon;
+};
+
+let me = {
+    age: 20;
+    firstName: "Nick";
+    lastName: "Martin";
+    forgottenColon "right here";
+}

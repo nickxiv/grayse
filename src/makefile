@@ -5,69 +5,79 @@ JCC = javac
 
 JFLAGS = -Xlint
 
-JRUN = java PP
+JRUN = java Evaluation
 
 default: 	
-	$(JCC) $(JFLAGS) *.java
+	@$(JCC) $(JFLAGS) *.java
+
+error1:
+	@cat tests/error1.gray
+
+error1x:
+	-@$(JRUN) tests/error1.gray
+
+error2:
+	@cat tests/error2.gray
+
+error2x:
+	-@$(JRUN) tests/error2.gray
+
+error3:
+	@cat tests/error3.gray
+
+error3x:
+	-@$(JRUN) tests/error3.gray
+
+error4:
+	@cat tests/error4.gray
+
+error4x:
+	-@$(JRUN) tests/error4.gray
+
+error5:
+	@cat tests/error5.gray
+
+error5x:
+	-@$(JRUN) tests/error5.gray
+
+arrays:
+	@cat tests/arrays.gray
+
+arraysx:
+	@$(JRUN) tests/arrays.gray
 
 
-scanner:
-	$(JCC) $(JFLAGS) Scanner.java
+conditionals:
+	@cat tests/conditionals.gray
 
-# test1:
-# 	$(JRUN) test1.gray
+conditionalsx:
+	@$(JRUN) tests/conditionals.gray
 
-# test2:
-# 	$(JRUN) test2.gray
+recursion:
+	@cat tests/recursion.gray
 
-# test3:
-# 	$(JRUN) test3.gray
+recursionx:
+	@$(JRUN) tests/recursion.gray
 
-# test4:
-# 	$(JRUN) test4.gray
 
-# test5:
-# 	$(JRUN) test5.gray
+iteration:
+	@cat tests/iteration.gray
 
-# test: run
+iterationx:
+	@$(JRUN) tests/iteration.gray
 
-run: test1 test2 test3
+functions:
+	@cat tests/functions.gray
+
+functionsx:
+	@$(JRUN) tests/functions.gray
+
+lambda:
+	@cat tests/lambda.gray
+
+lambdax:
+	@$(JRUN) tests/lambda.gray
 
 clean: 
-	clear
-	$(RM) *.class
-	$(RM) *.pp.*
-
-
-test1:
-	@echo Original file:
-	@cat test1.gray
-	@echo Pretty Printed version of the original:
-	@$(JRUN) test1.gray > test1.pp.1
-	@cat test1.pp.1
-	@echo Pretty Printed version of the pretty printed version:
-	@$(JRUN) test1.pp.1 > test1.pp.2
-	@cat test1.pp.2
-	diff -s -q test1.pp.1 test1.pp.2
-
-test2:
-	@echo Original file:
-	@cat test2.gray
-	@echo Pretty Printed version of the original:
-	@$(JRUN) test2.gray > test2.pp.1
-	@cat test2.pp.1
-	@echo Pretty Printed version of the pretty printed version:
-	@$(JRUN) test2.pp.1 > test2.pp.2
-	@cat test2.pp.2
-	diff -s -q test2.pp.1 test2.pp.2
-
-test3:
-	@echo Original file:
-	@cat test3.gray
-	@echo Pretty Printed version of the original:
-	@$(JRUN) test3.gray > test3.pp.1
-	@cat test3.pp.1
-	@echo Pretty Printed version of the pretty printed version:
-	@$(JRUN) test3.pp.1 > test3.pp.2
-	@cat test3.pp.2
-	diff -s -q test3.pp.1 test3.pp.2
+	@clear
+	@$(RM) *.class

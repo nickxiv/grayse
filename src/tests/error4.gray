@@ -1,0 +1,8 @@
+//Written by Nick Martin for CS403 - Programming Languages
+//The purpose of error4 is to test for missing variable definition
+
+
+let a = 1;
+let b = 2;
+c = 3;
+let d = 4;

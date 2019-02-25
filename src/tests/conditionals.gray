@@ -1,0 +1,42 @@
+let a = 1;
+let b = 2;
+let shortCircuit1 = 0;
+let shortCircuit2 = 0;
+let shortCircuit3 = 0;
+let shortCircuit4 = 0;
+
+func intToPredicate(num) {
+    if (num == 0) {
+        return "no";
+    }
+    else {
+        return "yes";
+    };
+};
+
+
+
+if (true | false) {
+    shortCircuit1 = true;
+};
+
+if (false | true) {
+    shortCircuit2 = false;
+};
+
+if (true & false) {
+    shortCircuit3 = false;
+};
+
+if (false & true) {
+    shortCircuit4 = true;
+};
+
+while(false & infinitelyLoopingFunctionOrSomethingThatHasAnErrorSuchAsThisFuncCallSinceItIsNotDefined()) {
+    println("This shouldn't print!");
+};
+
+println("Does true or false short circuit? ", intToPredicate(shortCircuit1));
+println("Does false or true short circuit? ", intToPredicate(shortCircuit2));
+println("Does true and false short circuit? ", intToPredicate(shortCircuit3));
+println("Does false and true short circuit? ", intToPredicate(shortCircuit4));
