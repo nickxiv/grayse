@@ -78,6 +78,13 @@ lambda:
 lambdax:
 	@$(JRUN) tests/lambda.gray
 
+problem:
+	@cat tests/problem.gray
+
+problemx:
+	@$(JRUN) tests/problem.gray
+
+
 clean: 
 	@clear
 	@$(RM) *.class

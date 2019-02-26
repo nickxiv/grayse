@@ -1,3 +1,9 @@
-func node(key, value) {
-    return this;
-}
+let sum = 0;
+let fp = openFileForReading("data.ints");
+let i = readInteger(fp);
+while ((atFileEnd(fp)) != true) {
+    sum = sum + i;
+    i = readInteger(fp);
+};
+println("sum is ",sum);
+closeFile(fp);
