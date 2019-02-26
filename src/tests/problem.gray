@@ -1,5 +1,6 @@
 let sum = 0;
-let fp = openFileForReading("data.ints");
+let fileName = argv(1);
+let fp = openFileForReading(fileName);
 let i = readInteger(fp);
 while ((atFileEnd(fp)) != true) {
     sum = sum + i;
