@@ -84,6 +84,13 @@ problem:
 problemx:
 	@$(JRUN) tests/problem.gray
 
+objects:
+	@cat tests/objects.gray
+
+objectsx:
+	@$(JRUN) tests/objects.gray
+
+
 
 clean: 
 	@clear
