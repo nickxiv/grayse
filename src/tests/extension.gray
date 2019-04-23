@@ -1,0 +1,39 @@
+func Grandparent() {
+    let x = "grandparent";
+    
+    
+    return this;
+};
+
+func Parent() {
+   // super(grandparent);
+    let x = "parent";
+    return this;
+};
+
+/*
+func Child() {
+    //super(parent);
+    return this;
+}
+
+func A(aebeug) {
+    super(B);
+    return this;
+}
+*/
+let name = "Nick";
+let gp = Grandparent("grandparent accessed");
+let p = Parent(gp, "parent accessed");
+
+print("In the grandparent object, x = ");
+println(gp.x);
+
+print("In the parent object, x = ");
+println(p.x);
+
+print("In the grandparent object, debug = ");
+println(gp.debug);
+
+print("In the parent object, debug = ");
+println(p.debug);

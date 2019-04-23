@@ -90,6 +90,24 @@ objects:
 objectsx:
 	@$(JRUN) tests/objects.gray
 
+extension:
+	@cat tests/extension.gray
+
+extensionx:
+	@$(JRUN) tests/extension.gray
+
+variation:
+	@cat tests/variation.gray
+
+variationx:
+	@$(JRUN) tests/variation.gray
+
+reification:
+	@cat tests/reification.gray
+
+reificationx:
+	@$(JRUN) tests/reification.gray
+
 
 
 clean: 

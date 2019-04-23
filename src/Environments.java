@@ -15,8 +15,16 @@ public class Environments implements Types {
         return cons(ENV, cons(TABLE,null,null), null);
     }
 
+    static Lexeme getEnclosingScope(Lexeme env) {
+        return env.cdr();
+    }
+
+    static Lexeme setEnclosingScope(Lexeme env, Lexeme enc) {
+        env.setCdr(enc);
+        return env;
+    }
     static Lexeme insert(Lexeme variable, Lexeme value, Lexeme env) {
-        if(lookup(variable.value.toString(), env) != null && (variable.value.toString() != "this")) {
+        if((variable.value.toString() != "this") && lookup(variable.value.toString(), env) != null) {
             System.out.println("ERROR line: " + variable.lineNumber + ", redefinition of variable \'" + variable.value.toString() +"\'" );
             System.exit(1);
         }
