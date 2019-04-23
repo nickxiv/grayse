@@ -24,7 +24,7 @@
             "request": "launch",
             "stopOnEntry": true,
             "args": [
-                "tests/lambda.gray"
+                "tests/extension.gray"
             ],
             "jdkPath": "${env:JAVA_HOME}/bin",
             "cwd": "${fileDirname}",
