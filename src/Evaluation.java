@@ -156,17 +156,28 @@ public class Evaluation implements Types {
     }
 
     static Lexeme evalSuper(Lexeme args, Lexeme childEnv) throws IOException {
-        String superName = args.car().car().value.toString();
-        // Lexeme x = createSuperObject(superClosure, env);
-        Lexeme superEnv = Environments.lookup(superName, childEnv);     //won't hit in the child env, will go to defining env of child
+        Lexeme superEnv = args.car();
         
+        Lexeme highestEnclosingScope = superEnv;
+        Lexeme nextEnclosingScope = Environments.getEnclosingScope(superEnv);
+        while (Environments.getEnclosingScope(nextEnclosingScope) != null) {
+            highestEnclosingScope = Environments.getEnclosingScope(nextEnclosingScope);
+            nextEnclosingScope = Environments.getEnclosingScope(highestEnclosingScope);
+        }    
+
+
+
         //A -> B -> C -> D
         //set the enclosing scope of d to the enclosing scope of a
         Lexeme childEnclosingScope = Environments.getEnclosingScope(childEnv);
-        Environments.setEnclosingScope(superEnv, childEnclosingScope);
+        Environments.setEnclosingScope(highestEnclosingScope, childEnclosingScope);
 
         //set the enclosing scope of a to b, b to c, and c to d
-        Environments.setEnclosingScope(childEnv, superEnv);
+        while (Environments.getEnclosingScope(superEnv).cdr() != null) {        //this ends when the super env would be the enclosing scope of the original child env (global)
+            Environments.setEnclosingScope(childEnv, superEnv);
+            childEnv = superEnv;
+            superEnv = Environments.getEnclosingScope(superEnv);
+        }
 
         //set the definition pointers of the function objects/closures contained in b, c, and d to a
         
@@ -222,7 +233,7 @@ public class Evaluation implements Types {
         if (name.equals("setArray"))
             return evalSetArray(eargs);
         if (name.equals("super"))
-            return evalSuper(args, env); // pass in unevaluated arguments so we can look up parent in environment
+            return evalSuper(eargs, env); // pass in unevaluated arguments so we can look up parent in environment
 
 
         Lexeme closure = eval(t.car(), env); // eval t.car() looks up func name in environment and returns the closure
@@ -238,7 +249,7 @@ public class Evaluation implements Types {
         Lexeme body = closure.cdr().cdr().cdr(); // body of func def
         Lexeme senv = closure.car(); // environment of funcdef
         Lexeme xenv = Environments.extend(params, eargs, senv); // environment of func definition extended with formal params set to values of evaluated args
-        Environments.insert(new Lexeme(STRING, "this", args.lineNumber), xenv, xenv);
+        Environments.insert(new Lexeme(STRING, "this", 0), xenv, xenv);
 
         return eval(body, xenv);
     }

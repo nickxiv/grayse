@@ -1,39 +1,25 @@
 func Grandparent() {
-    let x = "grandparent";
-    
-    
+    let b = "slap";
+    let a = "jacks";
     return this;
 };
 
 func Parent() {
-   // super(grandparent);
-    let x = "parent";
+    let parentParent = Grandparent();
+    super(parentParent);
+    let a = "nicks";
     return this;
 };
 
-/*
 func Child() {
-    //super(parent);
+    let childParent = Parent();
+    super(childParent);
     return this;
-}
-
-func A(aebeug) {
-    super(B);
-    return this;
-}
-*/
-let name = "Nick";
-let gp = Grandparent("grandparent accessed");
-let p = Parent(gp, "parent accessed");
-
-print("In the grandparent object, x = ");
-println(gp.x);
-
-print("In the parent object, x = ");
-println(p.x);
-
-print("In the grandparent object, debug = ");
-println(gp.debug);
-
-print("In the parent object, debug = ");
-println(p.debug);
+};
+let c = "happy";
+let gp = Grandparent();
+let p = Parent();
+let child = Child();
+println("a = ", child.a);
+println("b = ", child.b);
+println("c = ", child.c);
