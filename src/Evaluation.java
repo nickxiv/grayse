@@ -165,19 +165,20 @@ public class Evaluation implements Types {
             nextEnclosingScope = Environments.getEnclosingScope(highestEnclosingScope);
         }    
 
-
-
         //A -> B -> C -> D
         //set the enclosing scope of d to the enclosing scope of a
-        Lexeme childEnclosingScope = Environments.getEnclosingScope(childEnv);
-        Environments.setEnclosingScope(highestEnclosingScope, childEnclosingScope);
+        Lexeme outerScope = Environments.getEnclosingScope(childEnv);
+        Environments.setEnclosingScope(highestEnclosingScope, outerScope);
 
         //set the enclosing scope of a to b, b to c, and c to d
-        while (Environments.getEnclosingScope(superEnv).cdr() != null) {        //this ends when the super env would be the enclosing scope of the original child env (global)
-            Environments.setEnclosingScope(childEnv, superEnv);
-            childEnv = superEnv;
-            superEnv = Environments.getEnclosingScope(superEnv);
+        Lexeme next = superEnv;
+        Lexeme curr = childEnv;
+        while (Environments.getEnclosingScope(next) != null) {        //this ends when the super env would be the enclosing scope of the original child env (global)
+            Environments.setEnclosingScope(curr, next);
+            curr = next;
+            next = Environments.getEnclosingScope(next);
         }
+        
 
         //set the definition pointers of the function objects/closures contained in b, c, and d to a
         

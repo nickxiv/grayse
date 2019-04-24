@@ -7,19 +7,28 @@ func Grandparent() {
 func Parent() {
     let parentParent = Grandparent();
     super(parentParent);
-    let a = "nicks";
+    let please = "work";
     return this;
 };
 
+/*
 func Child() {
     let childParent = Parent();
     super(childParent);
     return this;
 };
+*/
 let c = "happy";
 let gp = Grandparent();
 let p = Parent();
-let child = Child();
-println("a = ", child.a);
-println("b = ", child.b);
-println("c = ", child.c);
+//let child = Child();
+println("gp.a = ", gp.a);
+println("gp.b = ", gp.b);
+println("gp.c = ", gp.c);
+println("p.a = ", p.a);
+println("p.b = ", p.b);
+println("p.c = ", p.c);
+println("p.please = ", p.please);
+println("child.a = ", child.a);
+println("child.b = ", child.b);
+println("child.c = ", child.c);
