@@ -1,34 +1,29 @@
 func Grandparent() {
+    let parent = NULL;
     let b = "slap";
-    let a = "jacks";
+
     return this;
 };
 
 func Parent() {
-    let parentParent = Grandparent();
-    super(parentParent);
-    let please = "work";
+    let parent = Grandparent();
+    let a = "jacks";
+
     return this;
 };
 
-/*
 func Child() {
-    let childParent = Parent();
-    super(childParent);
+    let parent = Parent();
+    let c = "happy";
+
     return this;
 };
-*/
-let c = "happy";
-let gp = Grandparent();
-let p = Parent();
-//let child = Child();
-println("gp.a = ", gp.a);
-println("gp.b = ", gp.b);
-println("gp.c = ", gp.c);
-println("p.a = ", p.a);
-println("p.b = ", p.b);
-println("p.c = ", p.c);
-println("p.please = ", p.please);
-println("child.a = ", child.a);
-println("child.b = ", child.b);
-println("child.c = ", child.c);
+
+let child = new(Child());
+
+println(child.a);
+println(child.b);
+println(child.c);
+
+
+

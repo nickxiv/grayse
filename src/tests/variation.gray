@@ -1,0 +1,32 @@
+func Grandparent() {
+    let parent = NULL;
+
+    func proveVariation() {
+        println("Not proven, printing from Grandparent");
+    };
+
+    return this;
+};
+
+func Parent() {
+    let parent = Grandparent();
+
+    func proveVariation() {
+        println("Not proven, printing from Parent");
+    };
+
+    return this;
+};
+
+func Child() {
+    let parent = Parent();
+
+    func proveVariation() {
+        println("Proven! Printing from Child.");
+    };
+    return this;
+};
+
+let child = new(Child());
+
+child.proveVariation();

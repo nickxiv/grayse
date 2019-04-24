@@ -1,0 +1,39 @@
+func Grandparent() {
+    let parent = NULL;
+
+    func proveReification() {
+        printFromGrand();
+        printFromParent();
+        printFromChild();
+
+    };
+
+    func printFromGrand() {
+        println("Printing from Grand object");
+    };
+
+    return this;
+};
+
+func Parent() {
+    let parent = Grandparent();
+
+    func printFromParent() {
+        println("Printing from Parent object");
+    };
+
+    return this;
+};
+
+func Child() {
+    let parent = Parent();
+
+    func printFromChild() {
+        println("Printing from Child object");
+    };
+    return this;
+};
+
+let child = new(Child());
+println("Proving reification = ");
+child.proveReification();
