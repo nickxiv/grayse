@@ -19,9 +19,18 @@ public class Environments implements Types {
         return env.cdr();
     }
 
-    static Lexeme setEnclosingScope(Lexeme env, Lexeme enc) {
-        env.setCdr(enc);
-        return env;
+    static Lexeme setEnclosingScope(Lexeme obj, Lexeme enc) {
+        if (obj.type == ENV) {
+            obj.setCdr(enc);
+        }
+        else if (obj.type == CLOSURE) {
+            obj.setCar(enc);
+        }
+        else {
+            System.err.println("Setting enclosing scope of non env/closure");
+            System.exit(1);
+        }
+        return obj;
     }
     static Lexeme insert(Lexeme variable, Lexeme value, Lexeme env) {
         if((variable.value.toString() != "this") && lookup(variable.value.toString(), env) != null) {
