@@ -1,6 +1,11 @@
 func Grandparent() {
     let parent = NULL;
 
+    func callIt() {
+        println("Calling from grand");
+        proveVariation();
+    };
+
     func proveVariation() {
         println("Not proven, printing from Grandparent");
     };
@@ -29,4 +34,4 @@ func Child() {
 
 let child = new(Child());
 
-child.proveVariation();
+child.callIt();

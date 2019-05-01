@@ -2,12 +2,20 @@ func Grandparent() {
     let parent = NULL;
     let b = "slap";
 
+    func printSecondWord() {
+        println(b);
+    };
+
     return this;
 };
 
 func Parent() {
     let parent = Grandparent();
     let a = "jacks";
+
+    func printFirstWord() {
+        println(a);
+    };
 
     return this;
 };
@@ -16,14 +24,20 @@ func Child() {
     let parent = Parent();
     let c = "happy";
 
+    func printTheSentence() {
+        printFirstWord();
+        printSecondWord();
+        printThirdWord();
+    };
+
+    func printThirdWord() {
+        println(c);
+    };
+
     return this;
 };
 
 let child = new(Child());
 
-println(child.a);
-println(child.b);
-println(child.c);
-
-
+child.printTheSentence();
 

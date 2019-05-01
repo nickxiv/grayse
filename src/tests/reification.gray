@@ -1,6 +1,8 @@
 func Grandparent() {
     let parent = NULL;
 
+    let obj = "Grand";
+
     func proveReification() {
         printFromGrand();
         printFromParent();
@@ -9,7 +11,7 @@ func Grandparent() {
     };
 
     func printFromGrand() {
-        println("Printing from Grand object");
+        println("Printing from", obj, " object");
     };
 
     return this;
@@ -18,8 +20,10 @@ func Grandparent() {
 func Parent() {
     let parent = Grandparent();
 
+    let obj = "Parent";
+
     func printFromParent() {
-        println("Printing from Parent object");
+        println("Printing From", obj, " object");
     };
 
     return this;
@@ -28,12 +32,18 @@ func Parent() {
 func Child() {
     let parent = Parent();
 
+    let obj = "CHILD";
+
     func printFromChild() {
-        println("Printing from Child object");
+        println("Printing from THE ", obj, " object");
     };
     return this;
 };
 
 let child = new(Child());
+
+let parent = new(Parent());
 println("Proving reification = ");
 child.proveReification();
+
+parent.proveReification();
